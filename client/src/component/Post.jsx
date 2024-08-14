@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { format } from "date-fns";
+import { formatISO9075 } from "date-fns";
 export default function Post({ post }) {
   return (
     <main>
@@ -19,7 +19,7 @@ export default function Post({ post }) {
             <a href="" className="author">
               {post.author.username}
             </a>
-            <time>{format(new Date(post.createdAt), "MMM d, yyyy HH:mm")}</time>
+            <time>{formatISO9075(new Date(post.createdAt))}</time>
           </p>
 
           <p>{post.summary}</p>

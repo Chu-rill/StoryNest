@@ -41,3 +41,51 @@ exports.viewPost = async (req, res) => {
   const post = await Post.findById(id).populate("author", ["username"]);
   res.send({ post });
 };
+exports.editPost = async (req, res) => {
+  let newPath = null;
+  if (req.file) {
+    const { originalname, path: oldPath } = req.file;
+    const parts = originalname.split(".");
+    const fileExtension = parts[parts.length - 1];
+    newPath = oldPath + "." + fileExtension;
+    fs.renameSync(oldPath, newPath);
+  }
+
+  const token = req.cookies.token;
+  jwt.verify(token, process.env.JWT_SECRET, async (error, info) => {
+    if (error) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
+    const { title, summary, content, id } = req.body;
+    try {
+      const post = await Post.findById(id);
+
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+
+      const isAuthor = post.author.toString() === info.id;
+
+      if (!isAuthor) {
+        return res.status(403).json({ message: "You are not the author" });
+      }
+
+      const updatedPost = await Post.findByIdAndUpdate(
+        id,
+        {
+          title,
+          summary,
+          content,
+          image: newPath ? newPath : post.image,
+        },
+        { new: true, runValidators: true }
+      );
+
+      res.json(updatedPost);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
