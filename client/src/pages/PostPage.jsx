@@ -3,24 +3,18 @@ import { Link, useParams } from "react-router-dom";
 import Header from "../component/Header";
 import { formatISO9075 } from "date-fns";
 import { UserContext } from "../context/UserContext";
+import { useShowPost } from "../hooks/useShowPost";
 
 export default function PostPage() {
   const { id } = useParams();
   const [postInfo, setPostInfo] = useState(null);
   const { userInfo } = useContext(UserContext);
-
+  const { loading, showPost } = useShowPost();
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3001/content/post/${id}`
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const post = await response.json();
-        console.log(post);
-        setPostInfo(post);
+        const data = await showPost();
+        setPostInfo(data);
       } catch (error) {
         console.error("Fetch error:", error);
       }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../component/Header";
 import Editor from "../component/Editor";
+import { useEditPost } from "../hooks/useEditPost";
 
 export default function EditPost() {
   const { id } = useParams();
@@ -9,6 +10,7 @@ export default function EditPost() {
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
   const [files, setFiles] = useState("");
+  const { loading, EditPost } = useEditPost();
   const navigate = useNavigate();
   useEffect(() => {
     const fetchPosts = async () => {
@@ -39,12 +41,8 @@ export default function EditPost() {
     data.set("content", content);
     data.set("file", files?.[0]);
     data.set("id", id);
-    const response = await fetch(`http://localhost:3001/content/edit/${id}`, {
-      method: "PUT",
-      body: data,
-      credentials: "include",
-    });
-    if (response.ok) {
+    const success = await EditPost(data);
+    if (success) {
       navigate("/home");
     }
   };
@@ -67,7 +65,9 @@ export default function EditPost() {
         />
         <input type="file" onChange={(e) => setFiles(e.target.files)} />
         <Editor value={content} onChange={setContent} />
-        <button style={{ marginTop: "5px" }}>Update Post</button>
+        <button disabled={loading}>
+          {loading ? <div className="loader"></div> : "Update Post"}
+        </button>
       </form>
     </main>
   );

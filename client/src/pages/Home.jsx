@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Header from "../component/Header";
 import Post from "../component/Post";
+import { useGetPost } from "../hooks/useGetPost";
 export default function Home() {
   const [posts, setPosts] = useState([]);
+  const { loading, getPost } = useGetPost();
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch("http://localhost:3001/content/getPost");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+        const data = await getPost();
         setPosts(data);
       } catch (error) {
         console.error("Fetch error:", error);
@@ -18,12 +16,12 @@ export default function Home() {
     };
 
     fetchPosts();
-  }, []);
+  }, [getPost]);
   return (
     <div>
       <Header />
       {posts.map((post) => (
-        <Post key={post.id} post={post} />
+        <Post key={post._id} post={post} />
       ))}
     </div>
   );

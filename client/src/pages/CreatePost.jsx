@@ -4,6 +4,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
 import Editor from "../component/Editor";
+import { useCreatePost } from "../hooks/useCreatePost";
 
 export default function CreatePost() {
   const [title, setTitle] = useState("");
@@ -11,6 +12,7 @@ export default function CreatePost() {
   const [content, setContent] = useState("");
   const [files, setFiles] = useState(null);
   const navigate = useNavigate();
+  const { loading, createPost } = useCreatePost();
 
   const createNewPost = async (e) => {
     e.preventDefault();
@@ -20,14 +22,8 @@ export default function CreatePost() {
     data.set("content", content);
     data.set("file", files[0]);
 
-    // Perform the fetch request
-    const response = await fetch("http://localhost:3001/content/post", {
-      method: "POST",
-      body: data,
-      credentials: "include",
-    });
-    if (response.ok) {
-      alert("Post Created");
+    const success = await createPost(data);
+    if (success) {
       navigate("/home");
     }
   };
@@ -50,7 +46,9 @@ export default function CreatePost() {
         />
         <input type="file" onChange={(e) => setFiles(e.target.files)} />
         <Editor value={content} onChange={setContent} />
-        <button style={{ marginTop: "5px" }}>Create Post</button>
+        <button disabled={loading}>
+          {loading ? <div className="loader"></div> : "Create Post"}
+        </button>
       </form>
     </main>
   );

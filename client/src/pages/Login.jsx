@@ -2,36 +2,37 @@ import React, { useState, useContext } from "react";
 import Header from "../component/Header";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
+import useLogin from "../hooks/useLogin";
+import { toast } from "react-hot-toast";
+import { FaRegEye } from "react-icons/fa6";
+import { FaRegEyeSlash } from "react-icons/fa6";
+
 export default function Login() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [showPassword, setShowPassword] = useState(true);
   const { setUserInfo } = useContext(UserContext);
   const navigate = useNavigate();
-  const login = async (e) => {
+  const { loading, login } = useLogin();
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const res = await fetch("http://localhost:3001/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ username, password }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-
-    if (res.ok) {
-      res.json().then((userInfo) => {
-        setUserInfo(userInfo);
-        alert("user logged in");
-        navigate("/home");
-      });
+    const userInfo = await login(username, password);
+    if (userInfo) {
+      setUserInfo(userInfo);
+      navigate("/home");
+    } else {
+      toast.error("Login failed");
+      setPassword("");
+      setUsername("");
     }
-    setPassword("");
-    setUsername("");
+  };
+  const toggleShow = () => {
+    setShowPassword((prev) => !prev);
   };
   return (
     <main>
       <Header />
-      <form className="login" onSubmit={login}>
+      <form className="login" onSubmit={handleLogin}>
         <h1>Login</h1>
         <input
           type="text"
@@ -39,13 +40,22 @@ export default function Login() {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
-        <input
-          type="password"
-          placeholder="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button>Login</button>
+        <div className="passwrap">
+          <input
+            type={showPassword ? "password" : "text"}
+            placeholder="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {showPassword ? (
+            <FaRegEyeSlash className="togglepass" onClick={toggleShow} />
+          ) : (
+            <FaRegEye className="togglepass" onClick={toggleShow} />
+          )}
+        </div>
+        <button disabled={loading}>
+          {loading ? <div className="loader"></div> : "Login"}
+        </button>
       </form>
     </main>
   );

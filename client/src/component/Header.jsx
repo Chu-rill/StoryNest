@@ -26,7 +26,7 @@ export default function Header() {
     <main>
       <header>
         <Link to="/home" className="logo">
-          MyBlog
+          Nspire
         </Link>
 
         <nav>

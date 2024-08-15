@@ -20,15 +20,16 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use(express.json());
 app.use(cookieParser());
 
-const URI = "mongodb://localhost:27017/blog";
+const port = process.env.PORT;
+const URI = process.env.MONGODB_URL || "mongodb://localhost:27017/blog";
 
 mongoose
   .connect(URI, {
-    serverSelectionTimeoutMS: 3000000,
+    // serverSelectionTimeoutMS: 3000000,
   })
   .then(() => {
     console.log("Connected to the database");
-    app.listen(3001, () => {
+    app.listen(port, () => {
       console.log(`Server started on port 3001`);
     });
   })

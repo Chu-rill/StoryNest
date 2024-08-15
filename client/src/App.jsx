@@ -8,6 +8,7 @@ import CreatePost from "./pages/CreatePost";
 import { UserContextProvider } from "./context/UserContext";
 import PostPage from "./pages/PostPage";
 import EditPost from "./pages/EditPost";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/post/:id" element={<PostPage />} />
         <Route path="/edit/:id" element={<EditPost />} />
       </Routes>
+      <Toaster />
     </UserContextProvider>
   );
 }
