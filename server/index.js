@@ -38,5 +38,8 @@ mongoose
     console.error("Connection failed", error);
   });
 
+app.get("/", (req, res) => {
+  res.send({ message: "sucess" });
+});
 app.use("/auth", authRoutes);
 app.use("/content", contentRoutes);
