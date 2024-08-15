@@ -39,7 +39,7 @@ mongoose
   });
 
 app.get("/", (req, res) => {
-  res.send({ message: "sucess" });
+  res.send({ message: "success" });
 });
 app.use("/auth", authRoutes);
 app.use("/content", contentRoutes);
