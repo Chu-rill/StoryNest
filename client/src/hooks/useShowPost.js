@@ -9,7 +9,9 @@ export const useShowPost = () => {
   const showPost = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/content/post/${id}`);
+      const response = await fetch(
+        `https://nspire.vercel.app/content/post/${id}`
+      );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

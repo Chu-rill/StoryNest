@@ -16,7 +16,7 @@ export default function EditPost() {
     const fetchPosts = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/content/post/${id}`
+          `https://nspire.vercel.app/content/post/${id}`
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

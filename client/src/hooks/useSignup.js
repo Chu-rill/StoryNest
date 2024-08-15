@@ -10,7 +10,7 @@ const useSignup = () => {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3001/auth/signup", {
+      const res = await fetch("https://nspire.vercel.app/auth/signup", {
         method: "POST",
         body: JSON.stringify({ username, password }),
         headers: {

@@ -9,11 +9,14 @@ export const useEditPost = () => {
   const EditPost = async (data) => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/content/edit/${id}`, {
-        method: "PUT",
-        body: data,
-        credentials: "include",
-      });
+      const response = await fetch(
+        `https://nspire.vercel.app/content/edit/${id}`,
+        {
+          method: "PUT",
+          body: data,
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         toast.success("Post Updated");

@@ -6,7 +6,7 @@ export const useGetPost = () => {
   const getPost = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/content/getPost");
+      const response = await fetch("https://nspire.vercel.app/content/getPost");
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

@@ -7,7 +7,7 @@ export default function Post({ post }) {
       <div className="post">
         <div className="image">
           <Link to={`/post/${post._id}`}>
-            <img src={`http://localhost:3001/${post.image}`} alt="" />
+            <img src={`https://nspire.vercel.app/${post.image}`} alt="" />
           </Link>
         </div>
 

@@ -5,14 +5,14 @@ import { UserContext } from "../context/UserContext";
 export default function Header() {
   const { setUserInfo, userInfo } = useContext(UserContext);
   const logout = () => {
-    fetch("http://localhost:3001/auth/logout", {
+    fetch("https://nspire.vercel.app//auth/logout", {
       credentials: "include",
       method: "POST",
     });
     setUserInfo(null);
   };
   useEffect(() => {
-    fetch("http://localhost:3001/auth/profile", {
+    fetch("https://nspire.vercel.app//auth/profile", {
       credentials: "include",
     }).then((response) => {
       response.json().then((userInfo) => {
