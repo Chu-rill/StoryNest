@@ -43,7 +43,7 @@ function handleInputErrors(username, password) {
     toast.error("Please fill all fields");
     return false;
   }
-  return true; // Ensure the function returns true if all checks are passed
+  return true;
 }
 
 export default useLogin;
