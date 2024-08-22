@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 // import { toast } from "react-hot-toast";
+import { api } from "../api";
 
 export const useShowPost = () => {
   const [loading, setLoading] = useState(false);
@@ -9,9 +10,7 @@ export const useShowPost = () => {
   const showPost = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `https://nspire.vercel.app/content/post/${id}`
-      );
+      const response = await fetch(`${api}/content/post/${id}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

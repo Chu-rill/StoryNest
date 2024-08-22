@@ -1,12 +1,13 @@
 // import React from "react";
 import { useState } from "react";
+import { api } from "../api";
 export const useGetPost = () => {
   const [loading, setLoading] = useState(false);
 
   const getPost = async () => {
     setLoading(true);
     try {
-      const response = await fetch("https://nspire.vercel.app/content/getPost");
+      const response = await fetch(`${api}/content/getPost`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

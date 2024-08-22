@@ -1,13 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { formatISO9075 } from "date-fns";
+import { api } from "../api";
 export default function Post({ post }) {
   return (
     <main>
       <div className="post">
         <div className="image">
-          <Link to={`/post/${post._id}`}>
-            <img src={`https://nspire.vercel.app/${post.image}`} alt="" />
+          <Link to={`${api}/post/${post._id}`}>
+            <img src={`/${post.image}`} alt="" />
           </Link>
         </div>
 

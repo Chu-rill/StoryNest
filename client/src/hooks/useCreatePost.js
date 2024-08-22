@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
-
+import { api } from "../api";
 export const useCreatePost = () => {
   const [loading, setLoading] = useState(false);
 
   const createPost = async (data) => {
     setLoading(true);
     try {
-      const response = await fetch("https://nspire.vercel.app/content/post", {
+      const response = await fetch(`${api}/content/post`, {
         method: "POST",
         body: data,
         credentials: "include",

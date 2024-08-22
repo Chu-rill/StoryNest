@@ -38,6 +38,11 @@ mongoose
     console.error("Connection failed", error);
   });
 
+app.use((req, res, next) => {
+  res.setTimeout(120000); // Set timeout to 2 minutes
+  next();
+});
+
 app.get("/", (req, res) => {
   res.send({ message: "success" });
 });

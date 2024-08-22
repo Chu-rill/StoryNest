@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-
+import { api } from "../api";
 const useLogin = () => {
   const [loading, setLoading] = useState(false);
 
@@ -10,7 +10,7 @@ const useLogin = () => {
 
     setLoading(true);
     try {
-      const res = await fetch("https://nspire.vercel.app/auth/login", {
+      const res = await fetch(`${api}/auth/login`, {
         method: "POST",
         body: JSON.stringify({ username, password }),
         headers: {

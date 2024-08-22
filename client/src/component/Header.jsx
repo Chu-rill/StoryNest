@@ -2,11 +2,12 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import { api } from "../api";
 export default function Header() {
   const { setUserInfo, userInfo } = useContext(UserContext);
   const navigate = useNavigate();
   const logout = () => {
-    fetch("https://nspire.vercel.app//auth/logout", {
+    fetch(`${api}//auth/logout`, {
       credentials: "include",
       method: "POST",
     });
@@ -14,7 +15,7 @@ export default function Header() {
     navigate("/home");
   };
   useEffect(() => {
-    fetch("https://nspire.vercel.app//auth/profile", {
+    fetch(`${api}//auth/profile`, {
       credentials: "include",
     }).then((response) => {
       response.json().then((userInfo) => {
