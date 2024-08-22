@@ -63,7 +63,11 @@ export default function EditPost() {
           value={summary}
           onChange={(e) => setSummary(e.target.value)}
         />
-        <input type="file" onChange={(e) => setFiles(e.target.files)} />
+        <input
+          type="file"
+          name="picture"
+          onChange={(e) => setFiles(e.target.files)}
+        />
         <Editor value={content} onChange={setContent} />
         <button disabled={loading}>
           {loading ? <div className="loader"></div> : "Update Post"}
