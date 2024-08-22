@@ -1,14 +1,8 @@
 const fs = require("fs");
-const path = require("path");
 const Post = require("../model/postModel");
 const jwt = require("jsonwebtoken");
-exports.post = async (req, res) => {
-  const { originalname, path } = req.file;
-  const parts = originalname.split(".");
-  const fileExtension = parts[parts.length - 1];
-  const newPath = path + "." + fileExtension;
-  fs.renameSync(path, newPath);
 
+exports.post = async (req, res) => {
   const token = req.cookies.token;
   jwt.verify(token, process.env.JWT_SECRET, async (error, info) => {
     if (error) {
@@ -20,37 +14,29 @@ exports.post = async (req, res) => {
       title,
       summary,
       content,
-      image: newPath,
+      image: req.file.path,
       author: info.id,
     });
     res.json(post);
   });
 };
+
 exports.getPost = async (req, res) => {
-  const posts = await Post.find()
-    .limit(20) // Limit the number of posts
-    .populate({
-      path: "author",
-      select: "username", // Project only the 'username' field from the author document
-    });
+  const posts = await Post.find().limit(20).populate({
+    path: "author",
+    select: "username",
+  });
 
   res.json(posts);
 };
+
 exports.viewPost = async (req, res) => {
   const { id } = req.params;
   const post = await Post.findById(id).populate("author", ["username"]);
   res.send({ post });
 };
-exports.editPost = async (req, res) => {
-  let newPath = null;
-  if (req.file) {
-    const { originalname, path: oldPath } = req.file;
-    const parts = originalname.split(".");
-    const fileExtension = parts[parts.length - 1];
-    newPath = oldPath + "." + fileExtension;
-    fs.renameSync(oldPath, newPath);
-  }
 
+exports.editPost = async (req, res) => {
   const token = req.cookies.token;
   jwt.verify(token, process.env.JWT_SECRET, async (error, info) => {
     if (error) {
@@ -77,7 +63,7 @@ exports.editPost = async (req, res) => {
           title,
           summary,
           content,
-          image: newPath ? newPath : post.image,
+          image: req.file ? req.file.path : post.image, // Update image only if new one is provided
         },
         { new: true, runValidators: true }
       );
