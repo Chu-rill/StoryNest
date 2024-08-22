@@ -20,7 +20,7 @@ export default function CreatePost() {
     data.set("title", title);
     data.set("summary", summary);
     data.set("content", content);
-    data.set("file", files[0]);
+    data.set("picture", files[0]);
 
     const success = await createPost(data);
     if (success) {
