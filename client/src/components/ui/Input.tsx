@@ -1,30 +1,44 @@
-import { forwardRef, InputHTMLAttributes } from 'react';
+import React, { forwardRef } from 'react';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   fullWidth?: boolean;
+  icon?: React.ReactNode;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, fullWidth = true, className = '', ...props }, ref) => {
+  ({ label, error, fullWidth = false, icon, className = '', ...props }, ref) => {
     return (
-      <div className={`${fullWidth ? 'w-full' : ''} mb-4`}>
+      <div className={`mb-4 ${fullWidth ? 'w-full' : ''}`}>
         {label && (
-          <label 
-            htmlFor={props.id} 
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             {label}
           </label>
         )}
-        <input
-          ref={ref}
-          className={`input ${error ? 'border-error focus:ring-error' : 'border-input focus:ring-primary'} ${className}`}
-          {...props}
-        />
+        <div className="relative">
+          {icon && (
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              {icon}
+            </div>
+          )}
+          <input
+            ref={ref}
+            className={`
+              px-4 py-2 bg-white dark:bg-gray-800 border 
+              ${error ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-700 focus:ring-blue-500 focus:border-blue-500'}
+              text-gray-900 dark:text-gray-100 rounded-md shadow-sm
+              focus:outline-none focus:ring-2 
+              transition duration-200
+              ${icon ? 'pl-10' : ''}
+              ${fullWidth ? 'w-full' : ''}
+              ${className}
+            `}
+            {...props}
+          />
+        </div>
         {error && (
-          <p className="mt-1 text-sm text-error">{error}</p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-500">{error}</p>
         )}
       </div>
     );

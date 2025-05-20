@@ -1,131 +1,128 @@
-import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
-import * as authApi from '../api/auth';
-import { AuthState, LoginData, RegisterData, User } from '../types';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
+import { User, AuthResponse } from '../types';
+import { loginUser, registerUser, getUserProfile, updateUserProfile } from '../services/authService';
 
-interface AuthContextType extends AuthState {
-  login: (data: LoginData) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
-  logout: () => Promise<void>;
-  followUser: (userId: string) => Promise<void>;
-  unfollowUser: (userId: string) => Promise<void>;
+interface AuthContextType {
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  register: (username: string, email: string, password: string) => Promise<void>;
+  logout: () => void;
+  updateProfile: (userData: Partial<User>) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    isLoading: true,
-    error: null,
-  });
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
 
-  // Check if user is logged in on initial load
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const user = await authApi.getCurrentUser();
-        setState({ user, isLoading: false, error: null });
-      } catch (error) {
-        setState({ user: null, isLoading: false, error: null });
+    const initAuth = async () => {
+      if (token) {
+        try {
+          // Check if token is expired
+          const decodedToken = jwtDecode<{ exp: number }>(token);
+          if (decodedToken.exp * 1000 < Date.now()) {
+            localStorage.removeItem('token');
+            setToken(null);
+            setUser(null);
+            setIsLoading(false);
+            return;
+          }
+
+          // Get user profile
+          const userData = await getUserProfile();
+          setUser(userData);
+        } catch (error) {
+          console.error('Failed to initialize auth:', error);
+          localStorage.removeItem('token');
+          setToken(null);
+          setUser(null);
+        }
       }
+      setIsLoading(false);
     };
 
-    checkAuthStatus();
-  }, []);
+    initAuth();
+  }, [token]);
 
-  const login = async (data: LoginData) => {
-    setState({ ...state, isLoading: true, error: null });
+  const login = async (email: string, password: string) => {
+    setIsLoading(true);
     try {
-      const user = await authApi.login(data);
-      setState({ user, isLoading: false, error: null });
-      toast.success('Logged in successfully');
-    } catch (error: any) {
-      setState({ 
-        ...state, 
-        isLoading: false, 
-        error: error.response?.data?.message || 'Login failed' 
-      });
-      toast.error(error.response?.data?.message || 'Login failed');
+      const response: AuthResponse = await loginUser(email, password);
+      localStorage.setItem('token', response.token);
+      setToken(response.token);
+      setUser(response.user);
+    } catch (error) {
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const register = async (data: RegisterData) => {
-    setState({ ...state, isLoading: true, error: null });
+  const register = async (username: string, email: string, password: string) => {
+    setIsLoading(true);
     try {
-      const user = await authApi.signUp(data);
-      setState({ user, isLoading: false, error: null });
-      toast.success('Registered successfully');
-    } catch (error: any) {
-      setState({ 
-        ...state, 
-        isLoading: false, 
-        error: error.response?.data?.message || 'Registration failed' 
-      });
-      toast.error(error.response?.data?.message || 'Registration failed');
+      const response: AuthResponse = await registerUser(username, email, password);
+      localStorage.setItem('token', response.token);
+      setToken(response.token);
+      setUser(response.user);
+    } catch (error) {
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const logout = async () => {
-    setState({ ...state, isLoading: true, error: null });
-    try {
-      await authApi.logout();
-      setState({ user: null, isLoading: false, error: null });
-      toast.success('Logged out successfully');
-    } catch (error: any) {
-      setState({ 
-        ...state, 
-        isLoading: false, 
-        error: error.response?.data?.message || 'Logout failed' 
-      });
-      toast.error('Logout failed');
-    }
+  const logout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+    setUser(null);
   };
 
-  const followUser = async (userId: string) => {
+  const updateProfile = async (userData: Partial<User>) => {
+    setIsLoading(true);
     try {
-      const updatedUser = await authApi.followUser(userId);
-      setState({ ...state, user: updatedUser });
-      toast.success('Successfully followed user');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to follow user');
+      const updatedUser = await updateUserProfile(userData);
+      setUser(updatedUser);
+    } catch (error) {
       throw error;
-    }
-  };
-
-  const unfollowUser = async (userId: string) => {
-    try {
-      const updatedUser = await authApi.unfollowUser(userId);
-      setState({ ...state, user: updatedUser });
-      toast.success('Successfully unfollowed user');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to unfollow user');
-      throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <AuthContext.Provider
       value={{
-        ...state,
+        user,
+        token,
+        isAuthenticated: !!token,
+        isLoading,
         login,
         register,
         logout,
-        followUser,
-        unfollowUser,
+        updateProfile,
       }}
     >
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

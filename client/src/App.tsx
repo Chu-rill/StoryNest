@@ -1,51 +1,80 @@
-import { Suspense, lazy } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
-import Layout from './components/layout/Layout';
-import LoadingSpinner from './components/ui/LoadingSpinner';
-import { useAuth } from './contexts/AuthContext';
-import Home from './pages/Home';
-import Login from './pages/Login';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import Layout from './components/common/Layout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
-// Lazy-loaded components
-const Register = lazy(() => import('./pages/Register'));
-const PostDetails = lazy(() => import('./pages/PostDetails'));
-const CreatePost = lazy(() => import('./pages/CreatePost'));
-const EditPost = lazy(() => import('./pages/EditPost'));
-const Profile = lazy(() => import('./pages/Profile'));
-const NotFound = lazy(() => import('./pages/NotFound'));
+// Public Pages
+import HomePage from './pages/home/HomePage';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import PostDetailPage from './pages/post/PostDetailPage';
+import SearchPage from './pages/search/SearchPage';
+import NotFoundPage from './pages/NotFoundPage';
+
+// Protected Pages
+import CreatePostPage from './pages/post/CreatePostPage';
+import ProfilePage from './pages/user/ProfilePage';
+import EditProfilePage from './pages/user/EditProfilePage';
 
 function App() {
-  const { user } = useAuth();
-
   return (
-    <Suspense fallback={<LoadingSpinner fullScreen />}>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="post/:id" element={<PostDetails />} />
-          
-          {/* Auth Routes */}
-          <Route 
-            path="login" 
-            element={user ? <Navigate to="/" /> : <Login />} 
-          />
-          <Route 
-            path="register" 
-            element={user ? <Navigate to="/" /> : <Register />} 
-          />
-          
-          {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="create-post" element={<CreatePost />} />
-            <Route path="edit-post/:id" element={<EditPost />} />
-          </Route>
-          
-          <Route path="profile/:id" element={<Profile />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
-    </Suspense>
+    <Router>
+      <ThemeProvider>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              {/* Public Routes */}
+              <Route index element={<HomePage />} />
+              <Route path="login" element={<LoginPage />} />
+              <Route path="register" element={<RegisterPage />} />
+              <Route path="post/:postId" element={<PostDetailPage />} />
+              <Route path="user/:userId" element={<ProfilePage />} />
+              <Route path="search" element={<SearchPage />} />
+              <Route path="tag/:tagName" element={<SearchPage />} />
+              
+              {/* Protected Routes */}
+              <Route 
+                path="create-post" 
+                element={
+                  <ProtectedRoute>
+                    <CreatePostPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="edit-post/:postId" 
+                element={
+                  <ProtectedRoute>
+                    <CreatePostPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="profile" 
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="profile/edit" 
+                element={
+                  <ProtectedRoute>
+                    <EditProfilePage />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Catch all route */}
+              <Route path="*" element={<NotFoundPage />} />
+            </Route>
+          </Routes>
+        </AuthProvider>
+      </ThemeProvider>
+    </Router>
   );
 }
 
