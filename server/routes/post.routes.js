@@ -20,20 +20,20 @@ const multer = require("multer");
 const validator = require("../middleware/validation");
 const postValidation = require("../validation/post.validation");
 
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET,
-});
+// cloudinary.config({
+//   cloud_name: process.env.CLOUD_NAME,
+//   api_key: process.env.API_KEY,
+//   api_secret: process.env.API_SECRET,
+// });
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "DEV",
-  },
-});
+// const storage = new CloudinaryStorage({
+//   cloudinary: cloudinary,
+//   params: {
+//     folder: "DEV",
+//   },
+// });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
 // Public routes
 postRoutes.get("/getPost", getPost);
@@ -45,14 +45,12 @@ postRoutes.post(
   "/post",
   validator.validateSchema(postValidation.create),
   protect,
-  upload.single("picture"),
   post
 );
 postRoutes.put(
   "/edit/:id",
   validator.validateSchema(postValidation.update),
   protect,
-  upload.single("picture"),
   editPost
 );
 postRoutes.post("/like/:id", protect, likePost);

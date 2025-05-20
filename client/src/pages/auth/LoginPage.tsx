@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useAuth } from '../../contexts/AuthContext';
-import Input from '../../components/ui/Input';
-import Button from '../../components/ui/Button';
-import Card, { CardBody, CardHeader, CardFooter } from '../../components/ui/Card';
-import { Mail, Lock } from 'lucide-react';
-import toast from 'react-hot-toast';
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useAuth } from "../../contexts/AuthContext";
+import Input from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
+import Card, {
+  CardBody,
+  CardHeader,
+  CardFooter,
+} from "../../components/ui/Card";
+import { Mail, Lock } from "lucide-react";
+import toast from "react-hot-toast";
 
 const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -34,14 +38,15 @@ const LoginPage: React.FC = () => {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
+      console.log(data);
       await login(data.email, data.password);
-      toast.success('Logged in successfully!');
-      
+      toast.success("Logged in successfully!");
+
       // Redirect to the page the user was trying to access or to the home page
-      const from = (location.state as any)?.from?.pathname || '/';
+      const from = (location.state as any)?.from?.pathname || "/";
       navigate(from, { replace: true });
     } catch (error) {
-      toast.error('Invalid email or password');
+      toast.error("Invalid email or password");
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +59,7 @@ const LoginPage: React.FC = () => {
           Log in to your account
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          Or{' '}
+          Or{" "}
           <Link
             to="/register"
             className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
@@ -71,24 +76,34 @@ const LoginPage: React.FC = () => {
               <Input
                 label="Email Address"
                 type="email"
-                {...register('email')}
+                {...register("email")}
                 fullWidth
                 error={errors.email?.message}
-                icon={<Mail size={18} className="text-gray-500 dark:text-gray-400" />}
+                icon={
+                  <Mail
+                    size={18}
+                    className="text-gray-500 dark:text-gray-400"
+                  />
+                }
                 placeholder="you@example.com"
               />
 
               <Input
                 label="Password"
                 type="password"
-                {...register('password')}
+                {...register("password")}
                 fullWidth
                 error={errors.password?.message}
-                icon={<Lock size={18} className="text-gray-500 dark:text-gray-400" />}
+                icon={
+                  <Lock
+                    size={18}
+                    className="text-gray-500 dark:text-gray-400"
+                  />
+                }
                 placeholder="••••••••"
               />
 
-              <div className="flex items-center justify-between">
+              {/* <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <input
                     id="remember-me"
@@ -112,7 +127,7 @@ const LoginPage: React.FC = () => {
                     Forgot your password?
                   </Link>
                 </div>
-              </div>
+              </div> */}
 
               <Button type="submit" fullWidth isLoading={isLoading}>
                 Log in

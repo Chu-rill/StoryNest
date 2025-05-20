@@ -1,28 +1,33 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useAuth } from '../../contexts/AuthContext';
-import Input from '../../components/ui/Input';
-import Button from '../../components/ui/Button';
-import Card, { CardBody } from '../../components/ui/Card';
-import { Mail, Lock, User } from 'lucide-react';
-import toast from 'react-hot-toast';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useAuth } from "../../contexts/AuthContext";
+import Input from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
+import Card, { CardBody } from "../../components/ui/Card";
+import { Mail, Lock, User } from "lucide-react";
+import toast from "react-hot-toast";
 
-const registerSchema = z.object({
-  username: z
-    .string()
-    .min(3, 'Username must be at least 3 characters')
-    .max(20, 'Username must be at most 20 characters')
-    .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
+const registerSchema = z
+  .object({
+    username: z
+      .string()
+      .min(3, "Username must be at least 3 characters")
+      .max(20, "Username must be at most 20 characters")
+      .regex(
+        /^[a-zA-Z0-9_]+$/,
+        "Username can only contain letters, numbers, and underscores"
+      ),
+    email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -43,10 +48,11 @@ const RegisterPage: React.FC = () => {
     setIsLoading(true);
     try {
       await registerUser(data.username, data.email, data.password);
-      toast.success('Account created successfully!');
-      navigate('/');
+      toast.success("Account created successfully!");
+      navigate("/");
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Failed to create account';
+      const errorMessage =
+        error.response?.data?.message || "Failed to create account";
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -60,7 +66,7 @@ const RegisterPage: React.FC = () => {
           Create your account
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Link
             to="/login"
             className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
@@ -77,52 +83,72 @@ const RegisterPage: React.FC = () => {
               <Input
                 label="Username"
                 type="text"
-                {...register('username')}
+                {...register("username")}
                 fullWidth
                 error={errors.username?.message}
-                icon={<User size={18} className="text-gray-500 dark:text-gray-400" />}
+                icon={
+                  <User
+                    size={18}
+                    className="text-gray-500 dark:text-gray-400"
+                  />
+                }
                 placeholder="johndoe"
               />
 
               <Input
                 label="Email Address"
                 type="email"
-                {...register('email')}
+                {...register("email")}
                 fullWidth
                 error={errors.email?.message}
-                icon={<Mail size={18} className="text-gray-500 dark:text-gray-400" />}
+                icon={
+                  <Mail
+                    size={18}
+                    className="text-gray-500 dark:text-gray-400"
+                  />
+                }
                 placeholder="you@example.com"
               />
 
               <Input
                 label="Password"
                 type="password"
-                {...register('password')}
+                {...register("password")}
                 fullWidth
                 error={errors.password?.message}
-                icon={<Lock size={18} className="text-gray-500 dark:text-gray-400" />}
+                icon={
+                  <Lock
+                    size={18}
+                    className="text-gray-500 dark:text-gray-400"
+                  />
+                }
                 placeholder="••••••••"
               />
 
               <Input
                 label="Confirm Password"
                 type="password"
-                {...register('confirmPassword')}
+                {...register("confirmPassword")}
                 fullWidth
                 error={errors.confirmPassword?.message}
-                icon={<Lock size={18} className="text-gray-500 dark:text-gray-400" />}
+                icon={
+                  <Lock
+                    size={18}
+                    className="text-gray-500 dark:text-gray-400"
+                  />
+                }
                 placeholder="••••••••"
               />
 
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                By signing up, you agree to our{' '}
+                By signing up, you agree to our{" "}
                 <Link
                   to="/terms"
                   className="font-medium text-blue-600 hover:underline dark:text-blue-400"
                 >
                   Terms of Service
-                </Link>{' '}
-                and{' '}
+                </Link>{" "}
+                and{" "}
                 <Link
                   to="/privacy"
                   className="font-medium text-blue-600 hover:underline dark:text-blue-400"

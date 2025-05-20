@@ -43,9 +43,9 @@ class UserService {
     }
   }
 
-  async loginUser(username, password) {
+  async loginUser(email, password) {
     try {
-      const user = await this.userRepository.findUserByUsername(username);
+      const user = await this.userRepository.findUserByEmail(email);
       if (!user) {
         throw new Error("Invalid credentials");
       }
@@ -58,7 +58,7 @@ class UserService {
       const token = jwt.sign(
         { id: user._id, username: user.username },
         process.env.JWT_SECRET,
-        { expiresIn: "7d" } // Adding token expiration
+        { expiresIn: "4h" } // Adding token expiration
       );
 
       return {

@@ -36,18 +36,9 @@ const userValidation = {
   }),
 
   login: Joi.object({
-    username: Joi.string()
-      .min(4)
-      .max(30)
-      .required()
-      .pattern(/^[a-zA-Z0-9_]+$/)
-      .messages({
-        "string.pattern.base":
-          "Username can only contain letters, numbers and underscores",
-        "string.min": "Username must be at least 4 characters long",
-        "string.max": "Username cannot exceed 30 characters",
-        "any.required": "Username is required",
-      }),
+    email: Joi.string().email().messages({
+      "string.email": "Please enter a valid email address",
+    }),
     password: Joi.string()
       .min(6)
       .required()

@@ -35,8 +35,11 @@ export interface Comment {
 }
 
 export interface AuthResponse {
+  status: string;
+  statusCode: number;
+  message: string;
   token: string;
   user: User;
 }
 
-export type ThemeMode = 'light' | 'dark';
+export type ThemeMode = "light" | "dark";

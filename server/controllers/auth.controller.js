@@ -3,8 +3,8 @@ const emailService = require("../utils/email");
 
 exports.login = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const user = await UserService.loginUser(username, password);
+    const { email, password } = req.body;
+    const user = await UserService.loginUser(email, password);
 
     res
       .cookie("token", token, {
