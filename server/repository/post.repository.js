@@ -69,9 +69,9 @@ class PostRepository {
     return post;
   }
 
-  async addComment(postId, userId, comment) {
-    const comment = {
-      text: comment,
+  async addComment(postId, userId, commentContent) {
+    let comment = {
+      text: commentContent,
       author: userId,
       createdAt: new Date(),
     };

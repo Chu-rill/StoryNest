@@ -10,18 +10,33 @@ const {
   getUserProfile,
   updateUserProfile,
 } = require("../controllers/auth.controller");
-const { authenticate } = require("../middleware/jwt");
+const { protect } = require("../middleware/jwt");
+const validator = require("../middleware/validation");
+const userValidation = require("../validation/user.validation");
 
 // Auth routes
-authRoutes.post("/login", login);
+authRoutes.post(
+  "/login",
+  validator.validateSchema(userValidation.login),
+  login
+);
 authRoutes.post("/logout", logout);
-authRoutes.post("/signup", signup);
+authRoutes.post(
+  "/signup",
+  validator.validateSchema(userValidation.register),
+  signup
+);
 
 // Protected routes
-authRoutes.get("/profile", authenticate, profile);
-authRoutes.post("/follow/:id", authenticate, followUser);
-authRoutes.post("/unfollow/:id", authenticate, unfollowUser);
-authRoutes.put("/update", authenticate, updateUserProfile);
-authRoutes.get("/user/:id", authenticate, getUserProfile);
+authRoutes.get("/profile", protect, profile);
+authRoutes.post("/follow/:id", protect, followUser);
+authRoutes.post("/unfollow/:id", protect, unfollowUser);
+authRoutes.put(
+  "/update",
+  validator.validateSchema(userValidation.update),
+  protect,
+  updateUserProfile
+);
+authRoutes.get("/user/:id", protect, getUserProfile);
 
 module.exports = authRoutes;

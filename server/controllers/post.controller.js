@@ -14,7 +14,7 @@ exports.post = async (req, res) => {
     };
 
     const post = await PostService.createPost(postData);
-    res.json(post);
+    res.status(post.statusCode).json(post);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -23,7 +23,7 @@ exports.post = async (req, res) => {
 exports.getPost = async (req, res) => {
   try {
     const posts = await PostService.getAllPosts(20);
-    res.json(posts);
+    res.status(posts.statusCode).json(posts);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -34,7 +34,7 @@ exports.getUserPosts = async (req, res) => {
     const userId = req.params.id;
     const limit = req.query.limit || 20;
     const posts = await PostService.getPostsByUserId(userId, limit);
-    res.json(posts);
+    res.status(posts.statusCode).json(posts);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -44,7 +44,7 @@ exports.viewPost = async (req, res) => {
   try {
     const id = req.params.id;
     const post = await PostService.getPostById(id);
-    res.json(post);
+    res.status(post.statusCode).json(post);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -65,7 +65,7 @@ exports.editPost = async (req, res) => {
 
     const result = await PostService.updatePost(postId, updateData);
 
-    res.json(result);
+    res.status(result.statusCode).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -77,7 +77,7 @@ exports.deletePost = async (req, res) => {
     const userId = req.user.id;
     const result = await PostService.deletePost(postId, userId);
 
-    res.json(result);
+    res.status(result.statusCode).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -89,7 +89,7 @@ exports.likePost = async (req, res) => {
     const userId = req.user.id;
     const result = await PostService.likePost(postId, userId);
 
-    res.json(result);
+    res.status(result.statusCode).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -101,7 +101,7 @@ exports.unlikePost = async (req, res) => {
     const userId = req.user.id;
     const result = await PostService.unlikePost(postId, userId);
 
-    res.json(result);
+    res.status(result.statusCode).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -113,7 +113,7 @@ exports.addComment = async (req, res) => {
     const { comment } = req.body.comment;
     const userId = req.user.id;
     const result = await PostService.addComment(postId, comment, userId);
-    res.json(result);
+    res.status(result.statusCode).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -123,7 +123,7 @@ exports.getComments = async (req, res) => {
   try {
     const postId = req.params.id;
     const comments = await PostService.getAllComments(postId);
-    res.json(comments);
+    res.status(comments.statusCode).json(comments);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -135,7 +135,7 @@ exports.deleteComment = async (req, res) => {
     const commentId = req.params.commentId;
     const userId = req.user.id;
     const result = await PostService.deleteComment(postId, commentId, userId);
-    res.json(result);
+    res.status(result.statusCode).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -145,7 +145,7 @@ exports.searchPosts = async (req, res) => {
   try {
     const query = req.query.q;
     const posts = await PostService.searchPosts(query);
-    res.json(posts);
+    res.status(posts.statusCode).json(posts);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

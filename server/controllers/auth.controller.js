@@ -1,4 +1,5 @@
 const UserService = require("../service/user.service");
+const emailService = require("../utils/email");
 
 exports.login = async (req, res) => {
   try {
@@ -10,6 +11,7 @@ exports.login = async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
       })
+      .status(user.statusCode)
       .json(user);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -23,9 +25,14 @@ exports.logout = async (req, res) => {
 
 exports.signup = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const user = await UserService.registerUser(username, password);
-    res.json(user);
+    const { username, password, email } = req.body;
+    const user = await UserService.registerUser(username, password, email);
+    const data = {
+      subject: "Welcome to Express Template",
+      username: username,
+    };
+    await emailService.sendEmailWithTemplate(email, data);
+    res.status(user.statusCode).json(user);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -35,7 +42,7 @@ exports.profile = async (req, res) => {
   try {
     const userId = req.user.id;
     const profile = await UserService.getUserProfile(userId);
-    res.json(profile);
+    res.status(profile.statusCode).json(profile);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -48,7 +55,7 @@ exports.followUser = async (req, res) => {
 
     const user = await UserService.followUser(followerUserId, followingUserId);
 
-    res.json(user);
+    res.status(user.statusCode).json(user);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -64,7 +71,7 @@ exports.unfollowUser = async (req, res) => {
       unfollowingUserId
     );
 
-    res.json(user);
+    res.status(user.statusCode).json(user);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -75,7 +82,7 @@ exports.getUserProfile = async (req, res) => {
     const userId = req.params.id;
     const profile = await UserService.getUserProfile(userId);
 
-    res.json(profile);
+    res.status(profile.statusCode).json(profile);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -98,7 +105,7 @@ exports.updateUserProfile = async (req, res) => {
       updateData
     );
 
-    res.json(updatedProfile);
+    res.status(updatedProfile.statusCode).json(updatedProfile);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

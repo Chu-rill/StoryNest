@@ -13,10 +13,12 @@ const {
   searchPosts,
   getUserPosts,
 } = require("../controllers/post.controller");
-const { authenticate } = require("../middleware/jwt");
+const { protect } = require("../middleware/jwt");
 const cloudinary = require("cloudinary");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const multer = require("multer");
+const validator = require("../middleware/validation");
+const postValidation = require("../validation/post.validation");
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -39,13 +41,30 @@ postRoutes.get("/post/:id", viewPost);
 postRoutes.get("/search", searchPosts);
 
 // Protected routes requiring authentication
-postRoutes.post("/post", authenticate, upload.single("picture"), post);
-postRoutes.put("/edit/:id", authenticate, upload.single("picture"), editPost);
-postRoutes.post("/like/:id", authenticate, likePost);
-postRoutes.post("/unlike/:id", authenticate, unlikePost);
-postRoutes.get("/comments/:id", authenticate, getComments);
-postRoutes.post("/comment/:id", authenticate, addComment);
-postRoutes.delete("/comment/:postId/:commentId", authenticate, deleteComment);
-postRoutes.get("/user/posts/:userId", authenticate, getUserPosts);
+postRoutes.post(
+  "/post",
+  validator.validateSchema(postValidation.create),
+  protect,
+  upload.single("picture"),
+  post
+);
+postRoutes.put(
+  "/edit/:id",
+  validator.validateSchema(postValidation.update),
+  protect,
+  upload.single("picture"),
+  editPost
+);
+postRoutes.post("/like/:id", protect, likePost);
+postRoutes.post("/unlike/:id", protect, unlikePost);
+postRoutes.get("/comments/:id", protect, getComments);
+postRoutes.post(
+  "/comment/:id",
+  validator.validateSchema(postValidation.comment),
+  protect,
+  addComment
+);
+postRoutes.delete("/comment/:postId/:commentId", protect, deleteComment);
+postRoutes.get("/user/posts/:userId", protect, getUserPosts);
 
 module.exports = postRoutes;

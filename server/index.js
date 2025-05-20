@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const dotenv = require("dotenv").config();
+const errorHandler = require("./middleware/error.handler");
 
 // Route imports
 const authRoutes = require("./routes/auth.routes");
@@ -31,6 +32,8 @@ app.use(
     credentials: true,
   })
 );
+//error handling middleware
+app.use(errorHandler);
 
 // Static files
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));

@@ -1,4 +1,5 @@
 const PostRepository = require("../repository/post.repository");
+const { NotFoundError } = require("../utils/errors");
 
 class PostService {
   constructor() {
@@ -33,12 +34,7 @@ class PostService {
     try {
       const post = await this.postRepository.findPostById(id);
       if (!post) {
-        // throw new Error("Post not found");
-        return {
-          status: "error",
-          statusCode: 404,
-          message: "Post not found",
-        };
+        throw new NotFoundError("Post not found");
       }
       return {
         status: "success",
@@ -90,6 +86,9 @@ class PostService {
   async getPostsByUserId(userId, limit) {
     try {
       const posts = await this.postRepository.getUserPosts(userId, limit);
+      if (!posts || posts.length === 0) {
+        throw new NotFoundError("No posts found for this user");
+      }
       return {
         status: "success",
         message: "Posts retrieved successfully",

@@ -7,13 +7,8 @@ class UserService {
     this.userRepository = UserRepository;
   }
 
-  async registerUser(username, password) {
+  async registerUser(username, password, email) {
     try {
-      // Validate input
-      if (!username || !password) {
-        throw new Error("Username and password are required");
-      }
-
       // Check if user already exists
       const existingUser = await this.userRepository.findUserByUsername(
         username
@@ -29,6 +24,7 @@ class UserService {
       const user = await this.userRepository.createUser({
         username,
         password: hashedPassword,
+        email,
       });
       return {
         status: "success",
@@ -49,10 +45,6 @@ class UserService {
 
   async loginUser(username, password) {
     try {
-      if (!username || !password) {
-        throw new Error("Username and password are required");
-      }
-
       const user = await this.userRepository.findUserByUsername(username);
       if (!user) {
         throw new Error("Invalid credentials");
