@@ -1,5 +1,5 @@
 const express = require("express");
-const contentRoutes = express.Router();
+const postRoutes = express.Router();
 const {
   post,
   getPost,
@@ -9,6 +9,7 @@ const {
   unlikePost,
   addComment,
   deleteComment,
+  getComments,
   searchPosts,
   getUserPosts,
 } = require("../controllers/post.controller");
@@ -33,26 +34,18 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage: storage });
 
 // Public routes
-contentRoutes.get("/getPost", getPost);
-contentRoutes.get("/post/:id", viewPost);
-contentRoutes.get("/search", searchPosts);
+postRoutes.get("/getPost", getPost);
+postRoutes.get("/post/:id", viewPost);
+postRoutes.get("/search", searchPosts);
 
 // Protected routes requiring authentication
-contentRoutes.post("/post", authenticate, upload.single("picture"), post);
-contentRoutes.put(
-  "/edit/:id",
-  authenticate,
-  upload.single("picture"),
-  editPost
-);
-contentRoutes.post("/like/:id", authenticate, likePost);
-contentRoutes.post("/unlike/:id", authenticate, unlikePost);
-contentRoutes.post("/comment/:id", authenticate, addComment);
-contentRoutes.delete(
-  "/comment/:postId/:commentId",
-  authenticate,
-  deleteComment
-);
-contentRoutes.get("/user/posts/:userId", authenticate, getUserPosts);
+postRoutes.post("/post", authenticate, upload.single("picture"), post);
+postRoutes.put("/edit/:id", authenticate, upload.single("picture"), editPost);
+postRoutes.post("/like/:id", authenticate, likePost);
+postRoutes.post("/unlike/:id", authenticate, unlikePost);
+postRoutes.get("/comments/:id", authenticate, getComments);
+postRoutes.post("/comment/:id", authenticate, addComment);
+postRoutes.delete("/comment/:postId/:commentId", authenticate, deleteComment);
+postRoutes.get("/user/posts/:userId", authenticate, getUserPosts);
 
-module.exports = contentRoutes;
+module.exports = postRoutes;

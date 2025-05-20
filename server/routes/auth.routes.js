@@ -8,6 +8,7 @@ const {
   followUser,
   unfollowUser,
   getUserProfile,
+  updateUserProfile,
 } = require("../controllers/auth.controller");
 const { authenticate } = require("../middleware/jwt");
 
@@ -20,6 +21,7 @@ authRoutes.post("/signup", signup);
 authRoutes.get("/profile", authenticate, profile);
 authRoutes.post("/follow/:id", authenticate, followUser);
 authRoutes.post("/unfollow/:id", authenticate, unfollowUser);
+authRoutes.put("/update", authenticate, updateUserProfile);
 authRoutes.get("/user/:id", authenticate, getUserProfile);
 
 module.exports = authRoutes;

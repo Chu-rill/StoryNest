@@ -6,8 +6,8 @@ const path = require("path");
 const dotenv = require("dotenv").config();
 
 // Route imports
-const authRoutes = require("./routes/authRoutes");
-const contentRoutes = require("./routes/contentRoutes");
+const authRoutes = require("./routes/auth.routes");
+const postRoutes = require("./routes/post.routes");
 
 // Initialize express
 const app = express();
@@ -53,7 +53,7 @@ app.get("/health", (req, res) => {
 
 // API routes
 app.use("/auth", authRoutes);
-app.use("/content", contentRoutes);
+app.use("/content", postRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
