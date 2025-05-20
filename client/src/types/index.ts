@@ -15,7 +15,7 @@ export interface Post {
   title: string;
   summary: string;
   content: string;
-  imageUrl?: string;
+  image?: string;
   tags: string[];
   category: string;
   author: User;

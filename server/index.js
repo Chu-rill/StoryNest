@@ -23,7 +23,7 @@ const ALLOWED_ORIGINS = [
 
 // Middleware
 app.use(express.json());
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(
   cors({
     origin: ALLOWED_ORIGINS,

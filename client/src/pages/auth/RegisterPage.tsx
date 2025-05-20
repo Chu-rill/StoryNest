@@ -49,7 +49,7 @@ const RegisterPage: React.FC = () => {
     try {
       await registerUser(data.username, data.email, data.password);
       toast.success("Account created successfully!");
-      navigate("/");
+      navigate("/login");
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Failed to create account";

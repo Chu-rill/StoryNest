@@ -6,13 +6,7 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
     const user = await UserService.loginUser(email, password);
 
-    res
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-      })
-      .status(user.statusCode)
-      .json(user);
+    res.status(user.statusCode).json(user);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
