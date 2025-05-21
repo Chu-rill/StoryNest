@@ -7,7 +7,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import Card, { CardBody } from "../../components/ui/Card";
-import { Mail, Lock, User } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 
 const registerSchema = z
@@ -35,6 +35,8 @@ const RegisterPage: React.FC = () => {
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
 
   const {
     register,
@@ -110,35 +112,81 @@ const RegisterPage: React.FC = () => {
                 placeholder="you@example.com"
               />
 
-              <Input
-                label="Password"
-                type="password"
-                {...register("password")}
-                fullWidth
-                error={errors.password?.message}
-                icon={
-                  <Lock
-                    size={18}
-                    className="text-gray-500 dark:text-gray-400"
-                  />
-                }
-                placeholder="••••••••"
-              />
+              <div className=" relative">
+                <Input
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  {...register("password")}
+                  fullWidth
+                  error={errors.password?.message}
+                  icon={
+                    <Lock
+                      size={18}
+                      className="text-gray-500 dark:text-gray-400"
+                    />
+                  }
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowPassword(!showPassword);
+                  }}
+                  className="focus:outline-none absolute top-[60%] left-[90%]"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff
+                      size={18}
+                      className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    />
+                  ) : (
+                    <Eye
+                      size={18}
+                      className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    />
+                  )}
+                </button>
+              </div>
 
-              <Input
-                label="Confirm Password"
-                type="password"
-                {...register("confirmPassword")}
-                fullWidth
-                error={errors.confirmPassword?.message}
-                icon={
-                  <Lock
-                    size={18}
-                    className="text-gray-500 dark:text-gray-400"
-                  />
-                }
-                placeholder="••••••••"
-              />
+              <div className=" relative">
+                <Input
+                  label="Confirm Password"
+                  type={showPassword2 ? "text" : "password"}
+                  {...register("confirmPassword")}
+                  fullWidth
+                  error={errors.confirmPassword?.message}
+                  icon={
+                    <Lock
+                      size={18}
+                      className="text-gray-500 dark:text-gray-400"
+                    />
+                  }
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowPassword2(!showPassword2);
+                  }}
+                  className="focus:outline-none absolute top-[60%] left-[90%]"
+                  tabIndex={-1}
+                >
+                  {showPassword2 ? (
+                    <EyeOff
+                      size={18}
+                      className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    />
+                  ) : (
+                    <Eye
+                      size={18}
+                      className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    />
+                  )}
+                </button>
+              </div>
 
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 By signing up, you agree to our{" "}

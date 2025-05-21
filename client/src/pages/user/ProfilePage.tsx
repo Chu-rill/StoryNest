@@ -43,7 +43,8 @@ const ProfilePage: React.FC = () => {
       setUserData(userInfo.profile);
       // Fetch user's posts
       const userPosts = await getUserPosts(userInfo.profile.id);
-      setPosts(userPosts.posts);
+      console.log("User Posts:", userPosts);
+      setPosts(Array.isArray(userPosts.posts) ? userPosts.posts : []);
     } catch (error) {
       console.error("Failed to fetch user data:", error);
       setError("Failed to load user profile. Please try again later.");
@@ -93,6 +94,9 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto py-6">
       {/* User profile header */}
+      <Link to="/">
+        <Button className=" mb-5">Dashboard</Button>
+      </Link>
       <UserProfile userData={userData} onUpdateUser={handleUserUpdate} />
 
       {/* Profile tabs */}

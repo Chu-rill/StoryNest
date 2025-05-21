@@ -115,7 +115,7 @@ export const getUserPosts = async (userId: string): Promise<PostResponse> => {
     const response = await api.get<PostResponse>(
       `/content/user/posts/${userId}`
     );
-    console.log("User Posts:", response.data.posts);
+    // console.log("User Posts:", response.data.posts);
     return response.data;
   } catch (error) {
     throw error;

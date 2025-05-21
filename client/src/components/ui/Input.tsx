@@ -1,16 +1,20 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef } from "react";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   fullWidth?: boolean;
   icon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, fullWidth = false, icon, className = '', ...props }, ref) => {
+  (
+    { label, error, fullWidth = false, icon, className = "", ...props },
+    ref
+  ) => {
     return (
-      <div className={`mb-4 ${fullWidth ? 'w-full' : ''}`}>
+      <div className={`mb-4 ${fullWidth ? "w-full" : ""}`}>
         {label && (
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             {label}
@@ -26,12 +30,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             className={`
               px-4 py-2 bg-white dark:bg-gray-800 border 
-              ${error ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-700 focus:ring-blue-500 focus:border-blue-500'}
+              ${
+                error
+                  ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                  : "border-gray-300 dark:border-gray-700 focus:ring-blue-500 focus:border-blue-500"
+              }
               text-gray-900 dark:text-gray-100 rounded-md shadow-sm
               focus:outline-none focus:ring-2 
               transition duration-200
-              ${icon ? 'pl-10' : ''}
-              ${fullWidth ? 'w-full' : ''}
+              ${icon ? "pl-10" : ""}
+              ${fullWidth ? "w-full" : ""}
               ${className}
             `}
             {...props}
@@ -45,6 +53,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   }
 );
 
-Input.displayName = 'Input';
+Input.displayName = "Input";
 
 export default Input;

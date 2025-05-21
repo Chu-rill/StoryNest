@@ -11,7 +11,7 @@ import Card, {
   CardHeader,
   CardFooter,
 } from "../../components/ui/Card";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 
 const loginSchema = z.object({
@@ -26,6 +26,7 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -87,20 +88,43 @@ const LoginPage: React.FC = () => {
                 placeholder="you@example.com"
               />
 
-              <Input
-                label="Password"
-                type="password"
-                {...register("password")}
-                fullWidth
-                error={errors.password?.message}
-                icon={
-                  <Lock
-                    size={18}
-                    className="text-gray-500 dark:text-gray-400"
-                  />
-                }
-                placeholder="••••••••"
-              />
+              <div className=" relative">
+                <Input
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  {...register("password")}
+                  fullWidth
+                  error={errors.password?.message}
+                  icon={
+                    <Lock
+                      size={18}
+                      className="text-gray-500 dark:text-gray-400"
+                    />
+                  }
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowPassword(!showPassword);
+                  }}
+                  className="focus:outline-none absolute top-[60%] left-[90%]"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff
+                      size={18}
+                      className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    />
+                  ) : (
+                    <Eye
+                      size={18}
+                      className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    />
+                  )}
+                </button>
+              </div>
 
               {/* <div className="flex items-center justify-between">
                 <div className="flex items-center">
