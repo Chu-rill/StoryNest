@@ -166,6 +166,10 @@ class UserService {
           followers: profile.followers,
           following: profile.following,
           bio: profile.bio,
+          email: profile.email,
+          profilePicture: profile.profilePicture,
+          posts: profile.posts,
+          likedPosts: profile.likedPosts,
           createdAt: profile.createdAt,
         },
       };

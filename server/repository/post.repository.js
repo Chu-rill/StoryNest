@@ -1,5 +1,5 @@
 const Post = require("../model/post.model");
-
+const mongoose = require("mongoose");
 class PostRepository {
   async createPost(postData) {
     return await Post.create(postData);

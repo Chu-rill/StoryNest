@@ -10,6 +10,16 @@ export interface User {
   createdAt: string;
 }
 
+export interface UserResponse {
+  message: string;
+  status: string;
+  statusCode: number;
+  profile: User;
+}
+
+// followers: any[];
+//   following: any[];
+
 export interface Post {
   id: string;
   title: string;
@@ -24,6 +34,17 @@ export interface Post {
   isLiked?: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PostResponse {
+  message: string;
+  status: string;
+  statusCode: number;
+  posts: Post;
+  totalPosts: number;
+  totalPages: number;
+  currentPage: number;
+  limit: number;
 }
 
 export interface Comment {

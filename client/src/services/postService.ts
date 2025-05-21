@@ -1,5 +1,5 @@
 import api from "./api";
-import { Post, Comment } from "../types";
+import { Post, Comment, PostResponse } from "../types";
 
 interface GetPostsParams {
   page?: number;
@@ -110,9 +110,12 @@ export const searchPosts = async (query: string): Promise<Post[]> => {
   }
 };
 
-export const getUserPosts = async (userId: string): Promise<Post[]> => {
+export const getUserPosts = async (userId: string): Promise<PostResponse> => {
   try {
-    const response = await api.get<Post[]>(`/content/user/posts/${userId}`);
+    const response = await api.get<PostResponse>(
+      `/content/user/posts/${userId}`
+    );
+    console.log("User Posts:", response.data.posts);
     return response.data;
   } catch (error) {
     throw error;

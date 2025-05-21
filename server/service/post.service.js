@@ -107,12 +107,15 @@ class PostService {
   async getPostsByUserId(userId, limit) {
     try {
       const posts = await this.postRepository.getUserPosts(userId, limit);
+      console.log(posts);
       if (!posts || posts.length === 0) {
         throw new NotFoundError("No posts found for this user");
       }
+
       return {
         status: "success",
         message: "Posts retrieved successfully",
+        statusCode: 200,
         posts: posts.map((post) => ({
           id: post._id,
           title: post.title,

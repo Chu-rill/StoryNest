@@ -41,7 +41,7 @@ exports.getPost = async (req, res) => {
 
 exports.getUserPosts = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.userId;
     const limit = req.query.limit || 20;
     const posts = await PostService.getPostsByUserId(userId, limit);
     res.status(posts.statusCode).json(posts);

@@ -38,7 +38,6 @@ const LoginPage: React.FC = () => {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      console.log(data);
       await login(data.email, data.password);
       toast.success("Logged in successfully!");
 

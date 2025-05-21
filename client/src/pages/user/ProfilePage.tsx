@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { getUserById, getUserProfile } from '../../services/authService';
-import { getUserPosts } from '../../services/postService';
-import { User, Post } from '../../types';
-import { useAuth } from '../../contexts/AuthContext';
-import UserProfile from '../../components/user/UserProfile';
-import PostCard from '../../components/post/PostCard';
-import Card, { CardBody } from '../../components/ui/Card';
-import { Tabs, Hash } from 'lucide-react';
-import Button from '../../components/ui/Button';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import { getUserById, getUserProfile } from "../../services/authService";
+import { getUserPosts } from "../../services/postService";
+import { User, Post, UserResponse } from "../../types";
+import { useAuth } from "../../contexts/AuthContext";
+import UserProfile from "../../components/user/UserProfile";
+import PostCard from "../../components/post/PostCard";
+import Card, { CardBody } from "../../components/ui/Card";
+// import { Tabs, Hash } from "lucide-react";
+import Button from "../../components/ui/Button";
+// import toast from "react-hot-toast";
 
 const ProfilePage: React.FC = () => {
   const { userId } = useParams<{ userId?: string }>();
@@ -18,7 +18,7 @@ const ProfilePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [userData, setUserData] = useState<User | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [activeTab, setActiveTab] = useState<'posts' | 'about'>('posts');
+  const [activeTab, setActiveTab] = useState<"posts" | "about">("posts");
 
   useEffect(() => {
     fetchUserData();
@@ -27,27 +27,26 @@ const ProfilePage: React.FC = () => {
   const fetchUserData = async () => {
     setIsLoading(true);
     try {
-      let userInfo: User;
-      
+      let userInfo: UserResponse;
+
       // If userId is provided, fetch that user's data
       // Otherwise, show the current logged-in user's profile
       if (userId) {
         userInfo = await getUserById(userId);
       } else {
         if (!currentUser) {
-          throw new Error('User not authenticated');
+          throw new Error("User not authenticated");
         }
         userInfo = await getUserProfile();
       }
-      
-      setUserData(userInfo);
-      
+
+      setUserData(userInfo.profile);
       // Fetch user's posts
-      const userPosts = await getUserPosts(userInfo.id);
-      setPosts(userPosts);
+      const userPosts = await getUserPosts(userInfo.profile.id);
+      setPosts(userPosts.posts);
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
-      setError('Failed to load user profile. Please try again later.');
+      console.error("Failed to fetch user data:", error);
+      setError("Failed to load user profile. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -58,7 +57,9 @@ const ProfilePage: React.FC = () => {
   };
 
   const handlePostUpdate = (updatedPost: Post) => {
-    setPosts(posts.map(post => post.id === updatedPost.id ? updatedPost : post));
+    setPosts(
+      posts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
+    );
   };
 
   if (isLoading) {
@@ -73,9 +74,12 @@ const ProfilePage: React.FC = () => {
     return (
       <div className="max-w-4xl mx-auto py-8">
         <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-md">
-          {error || 'User not found'}
+          {error || "User not found"}
           <div className="mt-4">
-            <Link to="/" className="text-blue-600 dark:text-blue-400 hover:underline">
+            <Link
+              to="/"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
               Back to Home
             </Link>
           </div>
@@ -90,35 +94,35 @@ const ProfilePage: React.FC = () => {
     <div className="max-w-4xl mx-auto py-6">
       {/* User profile header */}
       <UserProfile userData={userData} onUpdateUser={handleUserUpdate} />
-      
+
       {/* Profile tabs */}
       <div className="mt-8 border-b border-gray-200 dark:border-gray-700">
         <div className="flex space-x-8">
           <button
-            onClick={() => setActiveTab('posts')}
+            onClick={() => setActiveTab("posts")}
             className={`py-4 font-medium text-sm border-b-2 ${
-              activeTab === 'posts'
-                ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400'
-                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              activeTab === "posts"
+                ? "border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
             Posts
           </button>
           <button
-            onClick={() => setActiveTab('about')}
+            onClick={() => setActiveTab("about")}
             className={`py-4 font-medium text-sm border-b-2 ${
-              activeTab === 'about'
-                ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400'
-                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              activeTab === "about"
+                ? "border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
             About
           </button>
         </div>
       </div>
-      
+
       <div className="mt-6">
-        {activeTab === 'posts' && (
+        {activeTab === "posts" && (
           <div>
             {isOwnProfile && (
               <div className="mb-6">
@@ -127,7 +131,7 @@ const ProfilePage: React.FC = () => {
                 </Link>
               </div>
             )}
-            
+
             {posts.length === 0 ? (
               <Card>
                 <CardBody className="text-center py-12">
@@ -156,34 +160,40 @@ const ProfilePage: React.FC = () => {
             )}
           </div>
         )}
-        
-        {activeTab === 'about' && (
+
+        {activeTab === "about" && (
           <Card>
             <CardBody>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">About</h3>
-              
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                About
+              </h3>
+
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Bio</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Bio
+                  </p>
                   <p className="text-gray-700 dark:text-gray-300">
                     {userData.bio || (
                       <span className="text-gray-500 italic">
                         {isOwnProfile
-                          ? 'You have not added a bio yet.'
+                          ? "You have not added a bio yet."
                           : `${userData.username} has not added a bio yet.`}
                       </span>
                     )}
                   </p>
                 </div>
-                
+
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Member since</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Member since
+                  </p>
                   <p className="text-gray-700 dark:text-gray-300">
                     {new Date(userData.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>
-              
+
               {isOwnProfile && (
                 <div className="mt-6">
                   <Link to="/profile/edit">
