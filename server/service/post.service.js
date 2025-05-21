@@ -75,12 +75,14 @@ class PostService {
           summary: post.summary,
           content: post.content,
           image: post.image,
-          author: {
-            id: post.author._id,
-            username: post.author.username,
-          },
+          author: post.author
+            ? {
+                id: post.author._id,
+                username: post.author.username,
+              }
+            : null,
           category: post.category,
-          tags: post.tags,
+          tags: post.tags || [],
           likes: post.likes ? post.likes.length : 0,
           commentsCount: post.comments ? post.comments.length : 0,
           createdAt: post.createdAt,

@@ -18,7 +18,7 @@ export interface Post {
   image?: string;
   tags: string[];
   category: string;
-  author: User;
+  author: User | null;
   likes: number;
   commentsCount: number;
   isLiked?: boolean;

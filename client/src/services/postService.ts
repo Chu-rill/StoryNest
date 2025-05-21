@@ -13,7 +13,6 @@ export const getPosts = async (
 ): Promise<{ posts: Post[]; total: number; pages: number }> => {
   try {
     const response = await api.get("/content/getPost", { params });
-
     return response.data;
   } catch (error) {
     throw error;
