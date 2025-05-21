@@ -1,45 +1,59 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useAuth } from '../../contexts/AuthContext';
-import { createPost } from '../../services/postService';
-import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
-import TextArea from '../../components/ui/TextArea';
-import RichTextEditor from '../../components/post/RichTextEditor';
-import ImageUpload from '../../components/post/ImageUpload';
-import Card, { CardBody, CardHeader, CardFooter } from '../../components/ui/Card';
-import toast from 'react-hot-toast';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useAuth } from "../../contexts/AuthContext";
+import { createPost } from "../../services/postService";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
+import TextArea from "../../components/ui/TextArea";
+import RichTextEditor from "../../components/post/RichTextEditor";
+import ImageUpload from "../../components/post/ImageUpload";
+import Card, {
+  CardBody,
+  CardHeader,
+  CardFooter,
+} from "../../components/ui/Card";
+import toast from "react-hot-toast";
 
 const CATEGORIES = [
-  'Technology',
-  'Travel',
-  'Food',
-  'Health',
-  'Business',
-  'Art',
-  'Science',
-  'Other',
+  "Technology",
+  "Travel",
+  "Food",
+  "Health",
+  "Business",
+  "Art",
+  "Science",
+  "Other",
 ];
 
 const postSchema = z.object({
-  title: z.string().min(5, 'Title must be at least 5 characters').max(100, 'Title must be at most 100 characters'),
-  summary: z.string().min(10, 'Summary must be at least 10 characters').max(200, 'Summary must be at most 200 characters'),
-  content: z.string().min(50, 'Content must be at least 50 characters'),
-  imageUrl: z.string().optional(),
-  category: z.string().min(1, 'Please select a category'),
+  title: z
+    .string()
+    .min(5, "Title must be at least 5 characters")
+    .max(100, "Title must be at most 100 characters"),
+  summary: z
+    .string()
+    .min(10, "Summary must be at least 10 characters")
+    .max(200, "Summary must be at most 200 characters"),
+  content: z.string().min(50, "Content must be at least 50 characters"),
+  image: z.string().optional(),
+  category: z.string().min(1, "Please select a category"),
   tags: z.string().refine(
     (val) => {
       // Allow empty tags
       if (!val) return true;
       // Check if tags are properly formatted
-      const tags = val.split(',').map((tag) => tag.trim());
-      return tags.every((tag) => tag.length > 0 && tag.length <= 20 && /^[a-zA-Z0-9_-]+$/.test(tag));
+      const tags = val.split(",").map((tag) => tag.trim());
+      return tags.every(
+        (tag) =>
+          tag.length > 0 && tag.length <= 20 && /^[a-zA-Z0-9_-]+$/.test(tag)
+      );
     },
     {
-      message: 'Tags must be separated by commas and only contain letters, numbers, underscores, or hyphens',
+      message:
+        "Tags must be separated by commas and only contain letters, numbers, underscores, or hyphens",
     }
   ),
 });
@@ -59,36 +73,39 @@ const CreatePostPage: React.FC = () => {
   } = useForm<PostFormData>({
     resolver: zodResolver(postSchema),
     defaultValues: {
-      title: '',
-      summary: '',
-      content: '',
-      imageUrl: '',
-      category: '',
-      tags: '',
+      title: "",
+      summary: "",
+      content: "",
+      image: "",
+      category: "",
+      tags: "",
     },
   });
 
   const onSubmit = async (data: PostFormData) => {
     if (!user) return;
-    
+
     setIsSubmitting(true);
     try {
       // Transform tags from comma-separated string to array
       const tagsArray = data.tags
-        ? data.tags.split(',').map((tag) => tag.trim()).filter(Boolean)
+        ? data.tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter(Boolean)
         : [];
-      
+
       const postData = {
         ...data,
         tags: tagsArray,
       };
-      
+
       const newPost = await createPost(postData);
-      toast.success('Post created successfully!');
+      toast.success("Post created successfully!");
       navigate(`/post/${newPost.id}`);
     } catch (error) {
-      console.error('Failed to create post:', error);
-      toast.error('Failed to create post. Please try again.');
+      console.error("Failed to create post:", error);
+      toast.error("Failed to create post. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -96,8 +113,10 @@ const CreatePostPage: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto py-6">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Create New Post</h1>
-      
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+        Create New Post
+      </h1>
+
       <Card>
         <CardBody>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -105,7 +124,7 @@ const CreatePostPage: React.FC = () => {
               label="Title"
               type="text"
               placeholder="Enter your post title"
-              {...register('title')}
+              {...register("title")}
               error={errors.title?.message}
               fullWidth
             />
@@ -113,7 +132,7 @@ const CreatePostPage: React.FC = () => {
             <TextArea
               label="Summary"
               placeholder="Write a brief summary of your post"
-              {...register('summary')}
+              {...register("summary")}
               error={errors.summary?.message}
               fullWidth
             />
@@ -124,10 +143,14 @@ const CreatePostPage: React.FC = () => {
                   Category
                 </label>
                 <select
-                  {...register('category')}
+                  {...register("category")}
                   className={`
                     w-full px-4 py-2 bg-white dark:bg-gray-800 border 
-                    ${errors.category ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} 
+                    ${
+                      errors.category
+                        ? "border-red-500"
+                        : "border-gray-300 dark:border-gray-700"
+                    } 
                     rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
                     text-gray-900 dark:text-gray-100
                   `}
@@ -140,7 +163,9 @@ const CreatePostPage: React.FC = () => {
                   ))}
                 </select>
                 {errors.category && (
-                  <p className="mt-1 text-sm text-red-600 dark:text-red-500">{errors.category.message}</p>
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-500">
+                    {errors.category.message}
+                  </p>
                 )}
               </div>
 
@@ -148,7 +173,7 @@ const CreatePostPage: React.FC = () => {
                 label="Tags (comma separated)"
                 type="text"
                 placeholder="reactjs, webdev, tutorial"
-                {...register('tags')}
+                {...register("tags")}
                 error={errors.tags?.message}
                 fullWidth
               />
@@ -159,13 +184,13 @@ const CreatePostPage: React.FC = () => {
                 Cover Image
               </label>
               <Controller
-                name="imageUrl"
+                name="image"
                 control={control}
                 render={({ field }) => (
                   <ImageUpload
-                    value={field.value || ''}
+                    value={field.value || ""}
                     onChange={field.onChange}
-                    error={errors.imageUrl?.message}
+                    error={errors.image?.message}
                   />
                 )}
               />
@@ -192,7 +217,7 @@ const CreatePostPage: React.FC = () => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate('/')}
+                onClick={() => navigate("/")}
               >
                 Cancel
               </Button>

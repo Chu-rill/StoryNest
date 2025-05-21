@@ -16,7 +16,7 @@ export const uploadImage = async (file: File): Promise<string> => {
         "Content-Type": "multipart/form-data",
       },
     });
-
+    // console.log(response);
     return response.data.secure_url;
   } catch (error) {
     console.error("Error uploading image:", error);

@@ -56,28 +56,47 @@ class PostService {
     }
   }
 
-  async getAllPosts(limit) {
+  async getAllPosts(query) {
     try {
-      const post = await this.postRepository.getAllPosts(limit);
+      const result = await this.postRepository.getAllPosts(query);
+      if (!result || result.posts.length === 0) {
+        throw new NotFoundError("No posts found");
+      }
+      if (query.page < 1) {
+        throw new Error("Page number must be greater than 0");
+      }
       return {
         status: "success",
+        statusCode: 200,
         message: "Posts retrieved successfully",
-        posts: post.map((post) => ({
+        posts: result.posts.map((post) => ({
           id: post._id,
           title: post.title,
           summary: post.summary,
           content: post.content,
           image: post.image,
+          author: {
+            id: post.author._id,
+            username: post.author.username,
+          },
+          category: post.category,
+          tags: post.tags,
+          likes: post.likes ? post.likes.length : 0,
+          commentsCount: post.comments ? post.comments.length : 0,
+          createdAt: post.createdAt,
+          updatedAt: post.updatedAt,
         })),
-        totalPosts: post.length,
-        totalPages: Math.ceil(post.length / limit),
-        currentPage: 1,
-        limit: limit,
+        pagination: {
+          total: result.total,
+          totalPages: result.totalPages,
+          currentPage: result.currentPage,
+          limit: query.limit || 10,
+        },
       };
     } catch (error) {
       return {
         status: "error",
-        statusCode: error.message.includes("Post not found") ? 404 : 400,
+        statusCode: 400,
         message: error.message,
       };
     }

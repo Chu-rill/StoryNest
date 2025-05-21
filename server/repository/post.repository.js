@@ -11,11 +11,35 @@ class PostRepository {
       .populate("comments.author", ["username"]);
   }
 
-  async getAllPosts(limit) {
-    return await Post.find()
-      .limit(limit)
+  async getAllPosts(query) {
+    const { page = 1, limit = 10, category, tag } = query;
+    const skip = (page - 1) * limit;
+
+    let findQuery = {};
+
+    if (category) {
+      findQuery.category = category;
+    }
+
+    if (tag) {
+      findQuery.tags = tag;
+    }
+
+    const posts = await Post.find(findQuery)
+      .skip(skip)
+      .limit(parseInt(limit))
       .sort({ createdAt: -1 })
-      .populate("author", ["username"]);
+      .populate("author", ["username"])
+      .populate("comments.author", ["username"]);
+
+    const total = await Post.countDocuments(findQuery);
+
+    return {
+      posts,
+      total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: parseInt(page),
+    };
   }
 
   async updatePost(id, updateData, userId) {

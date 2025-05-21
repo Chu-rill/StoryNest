@@ -1,5 +1,5 @@
-import api from './api';
-import { Post, Comment } from '../types';
+import api from "./api";
+import { Post, Comment } from "../types";
 
 interface GetPostsParams {
   page?: number;
@@ -8,9 +8,12 @@ interface GetPostsParams {
   tag?: string;
 }
 
-export const getPosts = async (params: GetPostsParams = {}): Promise<{ posts: Post[]; total: number; pages: number }> => {
+export const getPosts = async (
+  params: GetPostsParams = {}
+): Promise<{ posts: Post[]; total: number; pages: number }> => {
   try {
-    const response = await api.get('/content/getPost', { params });
+    const response = await api.get("/content/getPost", { params });
+
     return response.data;
   } catch (error) {
     throw error;
@@ -28,14 +31,17 @@ export const getPostById = async (postId: string): Promise<Post> => {
 
 export const createPost = async (postData: Partial<Post>): Promise<Post> => {
   try {
-    const response = await api.post<Post>('/content/post', postData);
+    const response = await api.post<Post>("/content/post", postData);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const updatePost = async (postId: string, postData: Partial<Post>): Promise<Post> => {
+export const updatePost = async (
+  postId: string,
+  postData: Partial<Post>
+): Promise<Post> => {
   try {
     const response = await api.put<Post>(`/content/edit/${postId}`, postData);
     return response.data;
@@ -71,16 +77,24 @@ export const getComments = async (postId: string): Promise<Comment[]> => {
   }
 };
 
-export const addComment = async (postId: string, content: string): Promise<Comment> => {
+export const addComment = async (
+  postId: string,
+  content: string
+): Promise<Comment> => {
   try {
-    const response = await api.post<Comment>(`/content/comment/${postId}`, { content });
+    const response = await api.post<Comment>(`/content/comment/${postId}`, {
+      content,
+    });
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const deleteComment = async (postId: string, commentId: string): Promise<void> => {
+export const deleteComment = async (
+  postId: string,
+  commentId: string
+): Promise<void> => {
   try {
     await api.delete(`/content/comment/${postId}/${commentId}`);
   } catch (error) {

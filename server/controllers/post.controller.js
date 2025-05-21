@@ -22,10 +22,20 @@ exports.post = async (req, res) => {
 
 exports.getPost = async (req, res) => {
   try {
-    const posts = await PostService.getAllPosts(20);
+    const query = {
+      page: parseInt(req.query.page) || 1,
+      limit: parseInt(req.query.limit) || 10,
+      category: req.query.category,
+      tag: req.query.tag,
+    };
+
+    const posts = await PostService.getAllPosts(query);
     res.status(posts.statusCode).json(posts);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
   }
 };
 
