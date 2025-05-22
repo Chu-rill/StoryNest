@@ -43,7 +43,7 @@ const ProfilePage: React.FC = () => {
       setUserData(userInfo.profile);
       // Fetch user's posts
       const userPosts = await getUserPosts(userInfo.profile.id);
-      console.log("User Posts:", userPosts);
+      // console.log("User Posts:", userPosts);
       setPosts(Array.isArray(userPosts.posts) ? userPosts.posts : []);
     } catch (error) {
       console.error("Failed to fetch user data:", error);

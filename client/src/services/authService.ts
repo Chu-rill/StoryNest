@@ -27,6 +27,7 @@ export const registerUser = async (
       email,
       password,
     });
+    console.log(response);
     return response.data;
   } catch (error) {
     throw error;

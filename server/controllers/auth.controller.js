@@ -1,5 +1,5 @@
 const UserService = require("../service/user.service");
-const emailService = require("../utils/email");
+const { sendEmailWithTemplate } = require("../utils/email");
 
 exports.login = async (req, res) => {
   try {
@@ -22,10 +22,10 @@ exports.signup = async (req, res) => {
     const { username, password, email } = req.body;
     const user = await UserService.registerUser(username, password, email);
     const data = {
-      subject: "Welcome to Express Template",
+      subject: "Welcome to ThreadLog",
       username: username,
     };
-    await emailService.sendEmailWithTemplate(email, data);
+    await sendEmailWithTemplate(email, data);
     res.status(user.statusCode).json(user);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -85,13 +85,21 @@ exports.getUserProfile = async (req, res) => {
 exports.updateUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { username, password, email, bio, profilePicture } = req.body;
+    const {
+      username,
+      password,
+      email,
+      bio,
+      profilePicture,
+      profileBackground,
+    } = req.body;
     const updateData = {
       username,
       password,
       email,
       bio,
       profilePicture,
+      profileBackground,
     };
 
     const updatedProfile = await UserService.updateUserProfile(

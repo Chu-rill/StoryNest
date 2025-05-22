@@ -59,6 +59,7 @@ const userValidation = {
     email: Joi.string().email(),
     bio: Joi.string().max(160),
     profilePicture: Joi.string().uri().allow(""),
+    profileBackground: Joi.string().uri().allow(""),
   }),
 };
 

@@ -1,7 +1,12 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import { User, AuthResponse } from '../types';
-import { loginUser, registerUser, getUserProfile, updateUserProfile } from '../services/authService';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
+import { User, AuthResponse } from "../types";
+import {
+  loginUser,
+  registerUser,
+  getUserProfile,
+  updateUserProfile,
+} from "../services/authService";
 
 interface AuthContextType {
   user: User | null;
@@ -9,7 +14,11 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (username: string, email: string, password: string) => Promise<void>;
+  register: (
+    username: string,
+    email: string,
+    password: string
+  ) => Promise<void>;
   logout: () => void;
   updateProfile: (userData: Partial<User>) => Promise<void>;
 }
@@ -19,7 +28,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -30,7 +39,9 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("token")
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -40,7 +51,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Check if token is expired
           const decodedToken = jwtDecode<{ exp: number }>(token);
           if (decodedToken.exp * 1000 < Date.now()) {
-            localStorage.removeItem('token');
+            localStorage.removeItem("token");
             setToken(null);
             setUser(null);
             setIsLoading(false);
@@ -49,10 +60,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
           // Get user profile
           const userData = await getUserProfile();
-          setUser(userData);
+          setUser(userData.profile);
         } catch (error) {
-          console.error('Failed to initialize auth:', error);
-          localStorage.removeItem('token');
+          console.error("Failed to initialize auth:", error);
+          localStorage.removeItem("token");
           setToken(null);
           setUser(null);
         }
@@ -67,7 +78,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     try {
       const response: AuthResponse = await loginUser(email, password);
-      localStorage.setItem('token', response.token);
+      localStorage.setItem("token", response.token);
       setToken(response.token);
       setUser(response.user);
     } catch (error) {
@@ -77,11 +88,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const register = async (username: string, email: string, password: string) => {
+  const register = async (
+    username: string,
+    email: string,
+    password: string
+  ) => {
     setIsLoading(true);
     try {
-      const response: AuthResponse = await registerUser(username, email, password);
-      localStorage.setItem('token', response.token);
+      const response: AuthResponse = await registerUser(
+        username,
+        email,
+        password
+      );
+      localStorage.setItem("token", response.token);
       setToken(response.token);
       setUser(response.user);
     } catch (error) {
@@ -92,7 +111,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setToken(null);
     setUser(null);
   };

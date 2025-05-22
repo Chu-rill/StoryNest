@@ -4,6 +4,7 @@ export interface User {
   email: string;
   bio?: string;
   profilePicture?: string;
+  profileBackground?: string;
   followersCount: number;
   followingCount: number;
   isFollowing?: boolean;

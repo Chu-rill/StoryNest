@@ -10,9 +10,7 @@ class UserService {
   async registerUser(username, password, email) {
     try {
       // Check if user already exists
-      const existingUser = await this.userRepository.findUserByUsername(
-        username
-      );
+      const existingUser = await this.userRepository.findUserByEmail(email);
       if (existingUser) {
         throw new Error("Username already exists");
       }
@@ -26,6 +24,7 @@ class UserService {
         password: hashedPassword,
         email,
       });
+
       return {
         status: "success",
         statusCode: 201,
@@ -38,6 +37,7 @@ class UserService {
     } catch (error) {
       return {
         status: "error",
+        statusCode: error.message.includes("already exists") ? 409 : 400,
         message: error.message,
       };
     }
@@ -168,6 +168,7 @@ class UserService {
           bio: profile.bio,
           email: profile.email,
           profilePicture: profile.profilePicture,
+          profileBackground: profile.profileBackground,
           posts: profile.posts,
           likedPosts: profile.likedPosts,
           createdAt: profile.createdAt,
