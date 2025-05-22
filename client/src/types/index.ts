@@ -3,10 +3,10 @@ export interface User {
   username: string;
   email: string;
   bio?: string;
-  profilePicture?: string;
-  profileBackground?: string;
-  followersCount: number;
-  followingCount: number;
+  profilePicture: string;
+  profileBackground: string;
+  followers: any[];
+  following: any[];
   isFollowing?: boolean;
   createdAt: string;
 }

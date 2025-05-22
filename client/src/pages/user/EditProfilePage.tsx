@@ -36,7 +36,14 @@ const EditProfilePage: React.FC = () => {
   const [profilePicture, setProfilePicture] = useState<string | undefined>(
     user?.profilePicture
   );
+  const [profileBackground, setProfileBackground] = useState<
+    string | undefined
+  >(user?.profileBackground);
   const [fileUploadError, setFileUploadError] = useState<string | null>(null);
+  const [backgroundUploadError, setBackgroundUploadError] = useState<
+    string | null
+  >(null);
+  const [isUploadingBackground, setIsUploadingBackground] = useState(false);
 
   const {
     register,
@@ -57,6 +64,7 @@ const EditProfilePage: React.FC = () => {
           bio: userData.profile.bio || "",
         });
         setProfilePicture(userData.profile.profilePicture);
+        setProfileBackground(userData.profile.profileBackground);
       } catch (error) {
         console.error("Failed to load user profile:", error);
         toast.error("Failed to load user profile");
@@ -94,12 +102,51 @@ const EditProfilePage: React.FC = () => {
     }
   };
 
+  const handleBackgroundChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (limit to 10MB for background images)
+    if (file.size > 10 * 1024 * 1024) {
+      setBackgroundUploadError("File size must be less than 10MB");
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith("image/")) {
+      setBackgroundUploadError("File must be an image");
+      return;
+    }
+
+    try {
+      setBackgroundUploadError(null);
+      setIsUploadingBackground(true);
+      const imageUrl = await uploadImage(file);
+      setProfileBackground(imageUrl);
+    } catch (error) {
+      console.error("Failed to upload background image:", error);
+      setBackgroundUploadError(
+        "Failed to upload background image. Please try again."
+      );
+    } finally {
+      setIsUploadingBackground(false);
+    }
+  };
+
+  const removeBackground = () => {
+    setProfileBackground(undefined);
+    setBackgroundUploadError(null);
+  };
+
   const onSubmit = async (data: ProfileFormData) => {
     setIsSubmitting(true);
     try {
       await updateProfile({
         ...data,
         profilePicture,
+        profileBackground,
       });
       toast.success("Profile updated successfully");
       navigate("/profile");
@@ -149,7 +196,7 @@ const EditProfilePage: React.FC = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0118.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
                   />
                   <path
                     strokeLinecap="round"
@@ -208,6 +255,114 @@ const EditProfilePage: React.FC = () => {
               fullWidth
             />
 
+            {/* Profile Background Section */}
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Profile Background
+              </label>
+
+              {/* Background Preview */}
+              {profileBackground ? (
+                <div className="relative">
+                  <div
+                    className="w-full h-32 bg-cover bg-center rounded-lg border border-gray-300 dark:border-gray-600"
+                    style={{ backgroundImage: `url(${profileBackground})` }}
+                  />
+                  <button
+                    type="button"
+                    onClick={removeBackground}
+                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
+                    title="Remove background"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              ) : (
+                <div className="w-full h-32 bg-gray-100 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    No background image selected
+                  </p>
+                </div>
+              )}
+
+              {/* Upload Background Button */}
+              <div className="flex items-center space-x-3">
+                <label
+                  htmlFor="profileBackground"
+                  className={`inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors ${
+                    isUploadingBackground ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                >
+                  {isUploadingBackground ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-500 mr-2"></div>
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 mr-2"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        />
+                      </svg>
+                      Upload Background
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    id="profileBackground"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleBackgroundChange}
+                    disabled={isUploadingBackground}
+                  />
+                </label>
+
+                {profileBackground && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={removeBackground}
+                  >
+                    Remove
+                  </Button>
+                )}
+              </div>
+
+              {backgroundUploadError && (
+                <p className="text-sm text-red-600 dark:text-red-500">
+                  {backgroundUploadError}
+                </p>
+              )}
+
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Recommended: 1200x400px or larger. Max file size: 10MB
+              </p>
+            </div>
+
             <div className="flex justify-end space-x-3">
               <Button
                 type="button"
@@ -219,7 +374,7 @@ const EditProfilePage: React.FC = () => {
               <Button
                 type="submit"
                 isLoading={isSubmitting}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isUploadingBackground}
               >
                 Save Changes
               </Button>

@@ -41,10 +41,25 @@ const ProfilePage: React.FC = () => {
       }
 
       setUserData(userInfo.profile);
-      // Fetch user's posts
-      const userPosts = await getUserPosts(userInfo.profile.id);
-      // console.log("User Posts:", userPosts);
-      setPosts(Array.isArray(userPosts.posts) ? userPosts.posts : []);
+
+      // Fetch user's posts - handle "no posts" separately from other errors
+      try {
+        const userPosts = await getUserPosts(userInfo.profile.id);
+        setPosts(Array.isArray(userPosts.posts) ? userPosts.posts : []);
+      } catch (postError: any) {
+        // Check if it's a "no posts found" error
+        if (
+          postError?.response?.status === 400 &&
+          postError?.response?.data?.message?.includes("No posts found")
+        ) {
+          console.log("No posts found for user, setting empty array");
+          setPosts([]);
+        } else {
+          // For other post-related errors, log but don't break the profile display
+          console.error("Failed to fetch user posts:", postError);
+          setPosts([]);
+        }
+      }
     } catch (error) {
       console.error("Failed to fetch user data:", error);
       setError("Failed to load user profile. Please try again later.");

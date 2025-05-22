@@ -26,7 +26,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
 }) => {
   const { user, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-
+  const [imageError, setImageError] = useState(false);
   const isOwnProfile = user?.id === userData.id;
 
   const handleFollowToggle = async () => {
@@ -60,26 +60,48 @@ const UserProfile: React.FC<UserProfileProps> = ({
     }
   };
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    // Hide the image and show the gradient background instead
-    e.currentTarget.style.display = "none";
+  const handleImageError = () => {
+    console.log("Background image failed to load:", userData.profileBackground);
+    setImageError(true);
   };
 
+  // Function to clean up database values that might have quotes
+  const cleanUrl = (url: string) => {
+    if (!url) return url;
+    // Remove surrounding quotes if they exist
+    return url.replace(/^["']|["']$/g, "").trim();
+  };
+
+  // Clean the background URL and check if it's valid
+  const cleanedBackgroundUrl = cleanUrl(userData.profileBackground);
+  const hasValidBackground =
+    cleanedBackgroundUrl &&
+    cleanedBackgroundUrl !== "" &&
+    cleanedBackgroundUrl !== "null" &&
+    cleanedBackgroundUrl !== "undefined";
+
+  // Debug logging
+  // console.log("UserProfile Debug:", {
+  //   username: userData.username,
+  //   originalBackground: userData.profileBackground,
+  //   cleanedBackground: cleanedBackgroundUrl,
+  //   hasValidBackground,
+  //   imageError,
+  //   backgroundType: typeof userData.profileBackground,
+  // });
+  // console.log(userData);
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
       {/* Cover Image */}
       <div className="relative h-32 md:h-48">
-        {userData.profileBackground ? (
-          <>
-            <img
-              src={userData.profileBackground}
-              alt={`${userData.username}'s cover`}
-              className="w-full h-full object-cover"
-              onError={handleImageError}
-            />
-            {/* Fallback gradient - will show if image fails to load */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 -z-10"></div>
-          </>
+        {hasValidBackground && !imageError ? (
+          <img
+            src={cleanedBackgroundUrl}
+            alt={`${userData.username}'s cover`}
+            className="w-full h-full object-cover"
+            onError={handleImageError}
+            onLoad={() => console.log("Background image loaded successfully")}
+          />
         ) : (
           <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-600"></div>
         )}
@@ -91,7 +113,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
             {/* Avatar - positioned to overlap the cover image */}
             <div className="-mt-16 md:-mt-20 border-4 border-white dark:border-gray-800 rounded-full">
               <Avatar
-                src={userData.profilePicture}
+                src={cleanUrl(userData.profilePicture)}
                 fallback={userData.username}
                 size="xl"
                 className="ring-4 ring-white dark:ring-gray-800"
@@ -110,9 +132,12 @@ const UserProfile: React.FC<UserProfileProps> = ({
               <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center sm:justify-start mt-1">
                 <Calendar size={14} className="mr-1" />
                 Joined{" "}
-                {formatDistanceToNow(new Date(userData.createdAt), {
-                  addSuffix: true,
-                })}
+                {userData.createdAt &&
+                !isNaN(new Date(userData.createdAt).getTime())
+                  ? formatDistanceToNow(new Date(userData.createdAt), {
+                      addSuffix: true,
+                    })
+                  : "recently"}
               </p>
             </div>
           </div>
@@ -164,12 +189,12 @@ const UserProfile: React.FC<UserProfileProps> = ({
               <div className="flex items-center">
                 <LinkIcon size={14} className="mr-1" />
                 <a
-                  href={userData.website}
+                  href={cleanUrl(userData.website)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
                 >
-                  {userData.website.replace(/^https?:\/\//, "")}
+                  {cleanUrl(userData.website).replace(/^https?:\/\//, "")}
                 </a>
               </div>
             )}
@@ -180,7 +205,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
         <div className="mt-6 grid grid-cols-2 gap-4 border-t border-gray-200 dark:border-gray-700 pt-5">
           <div className="text-center">
             <span className="block text-2xl font-bold text-gray-900 dark:text-white">
-              {userData.followersCount?.toLocaleString() || 0}
+              {userData.followers.length?.toLocaleString() || 0}
             </span>
             <span className="block text-sm text-gray-500 dark:text-gray-400">
               Followers
@@ -188,7 +213,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
           </div>
           <div className="text-center">
             <span className="block text-2xl font-bold text-gray-900 dark:text-white">
-              {userData.followingCount?.toLocaleString() || 0}
+              {userData.following.length?.toLocaleString() || 0}
             </span>
             <span className="block text-sm text-gray-500 dark:text-gray-400">
               Following
