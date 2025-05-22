@@ -7,7 +7,6 @@ export interface User {
   profileBackground: string;
   followers: any[];
   following: any[];
-  isFollowing?: boolean;
   createdAt: string;
 }
 

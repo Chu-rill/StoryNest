@@ -52,7 +52,7 @@ const ProfilePage: React.FC = () => {
           postError?.response?.status === 400 &&
           postError?.response?.data?.message?.includes("No posts found")
         ) {
-          console.log("No posts found for user, setting empty array");
+          // console.log("No posts found for user, setting empty array");
           setPosts([]);
         } else {
           // For other post-related errors, log but don't break the profile display
