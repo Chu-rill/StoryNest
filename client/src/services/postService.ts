@@ -1,5 +1,5 @@
 import api from "./api";
-import { Post, Comment, PostResponse } from "../types";
+import { Post, Comment, PostResponse, SinglePostResponse } from "../types";
 
 interface GetPostsParams {
   page?: number;
@@ -19,9 +19,13 @@ export const getPosts = async (
   }
 };
 
-export const getPostById = async (postId: string): Promise<Post> => {
+export const getPostById = async (
+  postId: string
+): Promise<SinglePostResponse> => {
   try {
-    const response = await api.get<Post>(`/content/post/${postId}`);
+    const response = await api.get<SinglePostResponse>(
+      `/content/post/${postId}`
+    );
     return response.data;
   } catch (error) {
     throw error;

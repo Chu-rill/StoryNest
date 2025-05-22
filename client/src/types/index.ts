@@ -29,7 +29,7 @@ export interface Post {
   tags: string[];
   category: string;
   author: User | null;
-  likes: number;
+  likes: any[];
   commentsCount: number;
   isLiked?: boolean;
   createdAt: string;
@@ -45,6 +45,26 @@ export interface PostResponse {
   totalPages: number;
   currentPage: number;
   limit: number;
+}
+
+export interface SinglePostResponse {
+  status: string;
+  message: string;
+  statusCode: number;
+  post: {
+    id: string;
+    title: string;
+    summary: string;
+    content: string;
+    image?: string;
+    tags: string[];
+    category: string;
+    author: User | null;
+    likes: any[];
+    commentsCount: number;
+    createdAt: string;
+    updatedAt: string;
+  };
 }
 
 export interface Comment {

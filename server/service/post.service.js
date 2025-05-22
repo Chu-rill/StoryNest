@@ -39,12 +39,20 @@ class PostService {
       return {
         status: "success",
         message: "Post retrieved successfully",
+        statusCode: 200,
         post: {
           id: post._id,
           title: post.title,
           summary: post.summary,
           content: post.content,
           image: post.image,
+          category: post.category,
+          author: post.author,
+          likes: post.likes,
+          tags: post.tags,
+          comment: post.comments,
+          createAt: post.createdAt,
+          updatedAt: post.updatedAt,
         },
       };
     } catch (error) {
@@ -273,6 +281,7 @@ class PostService {
       return {
         status: "success",
         message: "Comments retrieved successfully",
+        statusCode: 200,
         comments: comments.map((comment) => ({
           id: comment._id,
           content: comment.content,
@@ -295,6 +304,7 @@ class PostService {
       return {
         status: "error",
         message: error.message,
+        statusCode: error.message.includes("Post not found") ? 404 : 400,
       };
     }
   }
@@ -330,6 +340,7 @@ class PostService {
       return {
         status: "success",
         message: "Posts retrieved successfully",
+        statusCode: 200,
         posts: post.map((post) => ({
           id: post._id,
           title: post.title,

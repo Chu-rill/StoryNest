@@ -9,6 +9,7 @@ import PostCard from "../../components/post/PostCard";
 import Card, { CardBody } from "../../components/ui/Card";
 // import { Tabs, Hash } from "lucide-react";
 import Button from "../../components/ui/Button";
+import { ArrowLeft } from "lucide-react";
 // import toast from "react-hot-toast";
 
 const ProfilePage: React.FC = () => {
@@ -109,8 +110,12 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto py-6">
       {/* User profile header */}
-      <Link to="/">
-        <Button className=" mb-5">Dashboard</Button>
+      <Link
+        to="/"
+        className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 mb-6"
+      >
+        <ArrowLeft size={16} className="mr-1" />
+        Back to Feed
       </Link>
       <UserProfile userData={userData} onUpdateUser={handleUserUpdate} />
 
