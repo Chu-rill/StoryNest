@@ -20,21 +20,6 @@ const multer = require("multer");
 const validator = require("../middleware/validation");
 const postValidation = require("../validation/post.validation");
 
-// cloudinary.config({
-//   cloud_name: process.env.CLOUD_NAME,
-//   api_key: process.env.API_KEY,
-//   api_secret: process.env.API_SECRET,
-// });
-
-// const storage = new CloudinaryStorage({
-//   cloudinary: cloudinary,
-//   params: {
-//     folder: "DEV",
-//   },
-// });
-
-// const upload = multer({ storage: storage });
-
 // Public routes
 postRoutes.get("/getPost", getPost);
 postRoutes.get("/post/:id", viewPost);
