@@ -51,7 +51,7 @@ class PostService {
           likes: post.likes,
           tags: post.tags,
           comment: post.comments,
-          createAt: post.createdAt,
+          createdAt: post.createdAt,
           updatedAt: post.updatedAt,
         },
       };

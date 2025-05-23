@@ -66,7 +66,7 @@ const Navbar: React.FC = () => {
               to="/"
               className="flex items-center text-xl font-bold text-blue-600 dark:text-blue-400"
             >
-              <span className="mr-2">ThreadLog</span>
+              <span className="mr-2">StoryNest</span>
             </Link>
           </div>
 
