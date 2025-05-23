@@ -30,8 +30,13 @@ const PostDetailPage: React.FC = () => {
     setIsLoading(true);
     try {
       const fetchedPost = await getPostById(id);
-      // console.log(fetchedPost.post);
-      setPost(fetchedPost.post);
+      // Ensure the post has the required properties with defaults
+      const processedPost = {
+        ...fetchedPost.post,
+        likes: fetchedPost.post.likes || [],
+        tags: fetchedPost.post.tags || [],
+      };
+      setPost(processedPost);
     } catch (error) {
       console.error("Failed to fetch post:", error);
       setError("Failed to load post. Please try again later.");
@@ -40,19 +45,74 @@ const PostDetailPage: React.FC = () => {
     }
   };
 
+  // More robust isLiked check using useMemo (similar to UserProfile)
+  const isLiked = React.useMemo(() => {
+    if (!user?.id || !isAuthenticated || !post?.likes) return false;
+
+    const found = post.likes.find((like: any) => {
+      // Handle different possible formats
+      if (typeof like === "string") return like === user.id;
+      if (typeof like === "object" && like !== null) {
+        return (
+          like.id === user.id || like._id === user.id || like.userId === user.id
+        );
+      }
+      return false;
+    });
+
+    return !!found;
+  }, [user?.id, post?.likes, isAuthenticated]);
+
   const handleLike = async () => {
-    if (!post || !isAuthenticated) {
+    if (!post || !isAuthenticated || !user) {
       toast.error("Please log in to like posts");
       return;
     }
 
     try {
-      const updatedPost = post.isLiked
-        ? await unlikePost(post.id)
-        : await likePost(post.id);
+      let updatedPost;
 
-      setPost(updatedPost);
+      if (isLiked) {
+        updatedPost = await unlikePost(post.id);
+        toast.success("Post unliked");
+      } else {
+        updatedPost = await likePost(post.id);
+        toast.success("Post liked");
+      }
+
+      // If API returns updated post data, use it
+      if (updatedPost && updatedPost.id) {
+        const processedPost = {
+          ...updatedPost,
+          likes: updatedPost.likes || [],
+          tags: updatedPost.tags || [],
+        };
+        setPost(processedPost);
+      } else {
+        // Fallback: manually update the likes array
+        const newLikes = isLiked
+          ? post.likes.filter((like: any) => {
+              if (typeof like === "string") return like !== user.id;
+              if (typeof like === "object" && like !== null) {
+                return (
+                  like.id !== user.id &&
+                  like._id !== user.id &&
+                  like.userId !== user.id
+                );
+              }
+              return true;
+            })
+          : [...post.likes, { id: user.id, userId: user.id }];
+
+        const updatedPostData = {
+          ...post,
+          likes: newLikes,
+        };
+
+        setPost(updatedPostData);
+      }
     } catch (error) {
+      console.error("Failed to update like status:", error);
       toast.error("Failed to update like status");
     }
   };
@@ -92,7 +152,7 @@ const PostDetailPage: React.FC = () => {
 
   // Helper function to safely format date
   const formatDate = (dateString: string | Date | null | undefined) => {
-    if (!dateString) return "Unknown date";
+    if (!dateString) return null;
 
     try {
       let date: Date;
@@ -111,14 +171,36 @@ const PostDetailPage: React.FC = () => {
 
       // Check if the date is valid
       if (!isValid(date)) {
-        return "Invalid date";
+        console.error("Invalid date:", dateString);
+        return null;
       }
 
       return formatDistanceToNow(date, { addSuffix: true });
     } catch (error) {
-      console.error("Error formatting date:", error);
-      return "Invalid date";
+      console.error("Error formatting date:", error, dateString);
+      return null;
     }
+  };
+
+  // Helper function to check if post was edited
+  const isPostEdited = () => {
+    if (!post?.createdAt || !post?.updatedAt) return false;
+
+    // Parse both dates and compare
+    const createdDate = new Date(post.createdAt);
+    const updatedDate = new Date(post.updatedAt);
+
+    // Check if both dates are valid
+    if (!isValid(createdDate) || !isValid(updatedDate)) return false;
+
+    // Compare timestamps (allow for small differences due to server processing)
+    return Math.abs(updatedDate.getTime() - createdDate.getTime()) > 1000; // 1 second threshold
+  };
+
+  // Helper function to get likes count safely
+  const getLikesCount = (): number => {
+    if (!post?.likes) return 0;
+    return Array.isArray(post.likes) ? post.likes.length : 0;
   };
 
   const isAuthor = post && user && post.author && post.author.id === user.id;
@@ -148,6 +230,10 @@ const PostDetailPage: React.FC = () => {
       </div>
     );
   }
+
+  // Format the creation date
+  const formattedDate = formatDate(post.createdAt);
+  const likesCount = getLikesCount();
 
   return (
     <div className="max-w-4xl mx-auto py-6">
@@ -198,9 +284,9 @@ const PostDetailPage: React.FC = () => {
                     {post.author.username}
                   </Link>
                   <div className="text-sm text-gray-500 dark:text-gray-400">
-                    {formatDate(post.createdAt)}
-                    {post.createdAt !== post.updatedAt && (
-                      <span className="ml-2">(edited)</span>
+                    {formattedDate || "Recently posted"}
+                    {isPostEdited() && (
+                      <span className="ml-2 text-xs">(edited)</span>
                     )}
                   </div>
                 </div>
@@ -234,22 +320,26 @@ const PostDetailPage: React.FC = () => {
             <div className="flex items-center space-x-4">
               <button
                 onClick={handleLike}
-                className={`flex items-center space-x-1 p-2 rounded-md ${
-                  post.isLiked
+                disabled={!isAuthenticated}
+                className={`flex items-center space-x-1 p-2 rounded-md transition-colors ${
+                  isLiked
                     ? "text-red-500 dark:text-red-400"
                     : "text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+                } ${
+                  !isAuthenticated
+                    ? "opacity-50 cursor-not-allowed"
+                    : "cursor-pointer"
                 }`}
               >
-                <Heart
-                  size={20}
-                  fill={post.isLiked ? "currentColor" : "none"}
-                />
-                <span>{post.likes.length} likes</span>
+                <Heart size={20} fill={isLiked ? "currentColor" : "none"} />
+                <span>
+                  {likesCount} {likesCount === 1 ? "like" : "likes"}
+                </span>
               </button>
 
               <button
                 onClick={handleShare}
-                className="flex items-center space-x-1 p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400"
+                className="flex items-center space-x-1 p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
               >
                 <Share2 size={20} />
                 <span>Share</span>
