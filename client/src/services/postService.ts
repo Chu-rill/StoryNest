@@ -6,6 +6,7 @@ import {
   SinglePostResponse,
   CommentResponse,
   SharePostResponse,
+  UpdatePostResponse,
 } from "../types";
 
 // =============================================
@@ -66,9 +67,12 @@ export const createPost = async (postData: Partial<Post>): Promise<Post> => {
 export const updatePost = async (
   postId: string,
   postData: Partial<Post>
-): Promise<Post> => {
+): Promise<UpdatePostResponse> => {
   try {
-    const response = await api.put<Post>(`/content/edit/${postId}`, postData);
+    const response = await api.put<UpdatePostResponse>(
+      `/content/edit/${postId}`,
+      postData
+    );
     return response.data;
   } catch (error) {
     console.error(`Error updating post ${postId}:`, error);

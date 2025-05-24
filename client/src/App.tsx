@@ -1,22 +1,28 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { ThemeProvider } from './contexts/ThemeContext';
-import Layout from './components/common/Layout';
-import ProtectedRoute from './components/auth/ProtectedRoute';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import Layout from "./components/common/Layout";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 // Public Pages
-import HomePage from './pages/home/HomePage';
-import LoginPage from './pages/auth/LoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
-import PostDetailPage from './pages/post/PostDetailPage';
-import SearchPage from './pages/search/SearchPage';
-import NotFoundPage from './pages/NotFoundPage';
+import HomePage from "./pages/home/HomePage";
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
+import PostDetailPage from "./pages/post/PostDetailPage";
+import SearchPage from "./pages/search/SearchPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 // Protected Pages
-import CreatePostPage from './pages/post/CreatePostPage';
-import ProfilePage from './pages/user/ProfilePage';
-import EditProfilePage from './pages/user/EditProfilePage';
+import CreatePostPage from "./pages/post/CreatePostPage";
+import ProfilePage from "./pages/user/ProfilePage";
+import EditProfilePage from "./pages/user/EditProfilePage";
+import EditPostPage from "./pages/post/EditPostPage";
 
 function App() {
   return (
@@ -33,41 +39,41 @@ function App() {
               <Route path="user/:userId" element={<ProfilePage />} />
               <Route path="search" element={<SearchPage />} />
               <Route path="tag/:tagName" element={<SearchPage />} />
-              
+
               {/* Protected Routes */}
-              <Route 
-                path="create-post" 
+              <Route
+                path="create-post"
                 element={
                   <ProtectedRoute>
                     <CreatePostPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="edit-post/:postId" 
+              <Route
+                path="edit-post/:postId"
                 element={
                   <ProtectedRoute>
-                    <CreatePostPage />
+                    <EditPostPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="profile" 
+              <Route
+                path="profile"
                 element={
                   <ProtectedRoute>
                     <ProfilePage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="profile/edit" 
+              <Route
+                path="profile/edit"
                 element={
                   <ProtectedRoute>
                     <EditProfilePage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
+
               {/* Catch all route */}
               <Route path="*" element={<NotFoundPage />} />
             </Route>

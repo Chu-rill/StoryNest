@@ -45,6 +45,20 @@ export interface PostResponse {
   currentPage: number;
   limit: number;
 }
+
+export interface UpdatePostResponse {
+  status: string;
+  statusCode: number;
+  message: string;
+  post: {
+    id: string;
+    title: string;
+    summary: string;
+    content: string;
+    image: string;
+  };
+}
+
 export interface SharePostResponse {
   success: string;
   statusCode: number;
