@@ -295,7 +295,11 @@ const PostDetailPage: React.FC = () => {
     return Array.isArray(post.shares) ? post.shares.length : 0;
   };
 
-  const isAuthor = post && user && post.author && post.author.id === user.id;
+  const getAuthorId = (author: any) => author?.id || author?._id;
+  const getUserId = (user: any) => user?.id || user?._id;
+
+  const isAuthor =
+    post && user && post.author && getAuthorId(post.author) === getUserId(user);
 
   if (isLoading) {
     return (
@@ -327,6 +331,7 @@ const PostDetailPage: React.FC = () => {
   const formattedDate = formatDate(post.createdAt);
   const likesCount = getLikesCount();
   const sharesCount = getSharesCount();
+  console.log(post);
 
   return (
     <div className="max-w-4xl mx-auto py-6">

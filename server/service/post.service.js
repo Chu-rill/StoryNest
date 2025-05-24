@@ -404,7 +404,6 @@ class PostService {
 
       // Populate the post with author details
       await this.postRepository.populatePostAuthor(post);
-
       return {
         status: "success",
         statusCode: 200,

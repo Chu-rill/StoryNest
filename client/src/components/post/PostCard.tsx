@@ -6,7 +6,7 @@ import { Post } from "../../types";
 import Avatar from "../ui/Avatar";
 import Card, { CardBody } from "../ui/Card";
 import { useAuth } from "../../contexts/AuthContext";
-import { likePost, unlikePost } from "../../services/postService";
+import { likePost, unlikePost, sharePost } from "../../services/postService";
 import toast from "react-hot-toast";
 
 interface PostCardProps {
@@ -15,44 +15,227 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdate }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const [isSharing, setIsSharing] = React.useState(false);
+
+  // More robust isLiked check using useMemo (similar to PostDetailPage)
+  const isLiked = React.useMemo(() => {
+    if (!user?.id || !isAuthenticated || !post?.likes) return false;
+
+    // Check if likes is an array (new format) or if we have isLiked property (legacy format)
+    if (Array.isArray(post.likes)) {
+      const found = post.likes.find((like: any) => {
+        // Handle different possible formats
+        if (typeof like === "string") return like === user.id;
+        if (typeof like === "object" && like !== null) {
+          return (
+            like.id === user.id ||
+            like._id === user.id ||
+            like.userId === user.id
+          );
+        }
+        return false;
+      });
+      return !!found;
+    }
+
+    // Fallback to isLiked property if available (legacy support)
+    return post.isLiked || false;
+  }, [user?.id, post?.likes, post?.isLiked, isAuthenticated]);
+
+  // Check if user has already shared this post
+  const hasShared = React.useMemo(() => {
+    if (!user?.id || !isAuthenticated || !post?.shares) return false;
+
+    // Only check if shares is an array
+    if (Array.isArray(post.shares)) {
+      const found = post.shares.find((share: any) => {
+        // Handle different possible formats
+        if (typeof share === "string") return share === user.id;
+        if (typeof share === "object" && share !== null) {
+          return (
+            share.id === user.id ||
+            share._id === user.id ||
+            share.userId === user.id
+          );
+        }
+        return false;
+      });
+      return !!found;
+    }
+
+    return false;
+  }, [user?.id, post?.shares, isAuthenticated]);
+
+  // Helper function to get likes count safely
+  const getLikesCount = (): number => {
+    if (!post?.likes) return 0;
+
+    // If likes is an array, return its length
+    if (Array.isArray(post.likes)) {
+      return post.likes.length;
+    }
+
+    // If likes is a number (legacy format), return it directly
+    if (typeof post.likes === "number") {
+      return post.likes;
+    }
+
+    return 0;
+  };
+
+  // Helper function to get shares count safely
+  const getSharesCount = (): number => {
+    // Use shareCount if available, otherwise fall back to shares array length
+    if (post?.shareCount !== undefined) return post.shareCount;
+    if (!post?.shares) return 0;
+    return Array.isArray(post.shares) ? post.shares.length : 0;
+  };
 
   const handleLike = async () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
       toast.error("Please log in to like posts");
       return;
     }
 
     try {
-      const updatedPost = post.isLiked
-        ? await unlikePost(post.id)
-        : await likePost(post.id);
+      let updatedPost;
 
-      if (onPostUpdate) {
-        onPostUpdate(updatedPost);
+      if (isLiked) {
+        updatedPost = await unlikePost(post.id);
+        toast.success("Post unliked");
+      } else {
+        updatedPost = await likePost(post.id);
+        toast.success("Post liked");
+      }
+
+      // If API returns updated post data, use it
+      if (updatedPost && updatedPost.id && onPostUpdate) {
+        const processedPost = {
+          ...updatedPost,
+          likes: updatedPost.likes || [],
+          tags: updatedPost.tags || [],
+          shares: updatedPost.shares || post.shares || [],
+          shareCount: updatedPost.shareCount || post.shareCount || 0,
+        };
+        onPostUpdate(processedPost);
+      } else if (onPostUpdate) {
+        // Fallback: manually update the likes array or count
+        if (Array.isArray(post.likes)) {
+          // Handle array format
+          const newLikes = isLiked
+            ? post.likes.filter((like: any) => {
+                if (typeof like === "string") return like !== user.id;
+                if (typeof like === "object" && like !== null) {
+                  return (
+                    like.id !== user.id &&
+                    like._id !== user.id &&
+                    like.userId !== user.id
+                  );
+                }
+                return true;
+              })
+            : [...post.likes, { id: user.id, userId: user.id }];
+
+          const updatedPostData = {
+            ...post,
+            likes: newLikes,
+          };
+
+          onPostUpdate(updatedPostData);
+        } else {
+          // Handle legacy number format
+          const currentCount = typeof post.likes === "number" ? post.likes : 0;
+          const newCount = isLiked
+            ? Math.max(0, currentCount - 1)
+            : currentCount + 1;
+
+          const updatedPostData = {
+            ...post,
+            likes: Array(newCount).fill({ id: user.id, userId: user.id }),
+          };
+
+          onPostUpdate(updatedPostData);
+        }
       }
     } catch (error) {
+      console.error("Failed to update like status:", error);
       toast.error("Failed to update like status");
     }
   };
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator
-        .share({
+  const handleShare = async () => {
+    setIsSharing(true);
+
+    try {
+      // First, record the share in the backend
+      if (isAuthenticated && user) {
+        try {
+          const updatedPost = await sharePost(post.id);
+
+          // Update post state with new share data
+          if (updatedPost && updatedPost.post.id && onPostUpdate) {
+            const processedPost = {
+              ...updatedPost.post,
+              likes: updatedPost.post.likes || post.likes || [],
+              tags: updatedPost.post.tags || post.tags || [],
+              shares: updatedPost.post.shares || [],
+              shareCount: updatedPost.post.shareCount || 0,
+            };
+            onPostUpdate(processedPost);
+          } else if (onPostUpdate) {
+            // Fallback: manually update share count
+            const newShares = hasShared
+              ? post.shares
+              : [
+                  ...(post.shares || []),
+                  {
+                    id: user.id,
+                    userId: user.id,
+                    sharedAt: new Date().toISOString(),
+                  },
+                ];
+
+            onPostUpdate({
+              ...post,
+              shares: newShares,
+              shareCount: (post.shareCount || 0) + (hasShared ? 0 : 1),
+            });
+          }
+        } catch (apiError) {
+          console.error("Failed to record share:", apiError);
+          // Continue with share functionality even if API fails
+        }
+      }
+
+      // Then handle the actual sharing
+      if (navigator.share) {
+        await navigator.share({
           title: post.title,
           text: post.summary,
           url: window.location.origin + "/post/" + post.id,
-        })
-        .catch((error) => console.log("Error sharing", error));
-    } else {
-      // Fallback for browsers that don't support navigator.share
-      navigator.clipboard.writeText(
-        window.location.origin + "/post/" + post.id
-      );
-      toast.success("Link copied to clipboard!");
+        });
+        toast.success("Post shared successfully!");
+      } else {
+        // Fallback for browsers that don't support navigator.share
+        await navigator.clipboard.writeText(
+          window.location.origin + "/post/" + post.id
+        );
+        toast.success("Link copied to clipboard!");
+      }
+    } catch (error: unknown) {
+      // Handle share cancellation or other errors
+      if (error instanceof Error && error.name !== "AbortError") {
+        console.error("Error sharing:", error);
+        toast.error("Failed to share post");
+      }
+    } finally {
+      setIsSharing(false);
     }
   };
+
+  const likesCount = getLikesCount();
+  const sharesCount = getSharesCount();
 
   return (
     <Card
@@ -132,17 +315,19 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdate }) => {
             <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
               <button
                 onClick={handleLike}
-                className={`flex items-center space-x-1 ${
-                  post.isLiked
+                disabled={!isAuthenticated}
+                className={`flex items-center space-x-1 transition-colors ${
+                  isLiked
                     ? "text-red-500 dark:text-red-400"
                     : "text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+                } ${
+                  !isAuthenticated
+                    ? "opacity-50 cursor-not-allowed"
+                    : "cursor-pointer"
                 }`}
               >
-                <Heart
-                  size={18}
-                  fill={post.isLiked ? "currentColor" : "none"}
-                />
-                <span>{post.likes}</span>
+                <Heart size={18} fill={isLiked ? "currentColor" : "none"} />
+                <span>{likesCount}</span>
               </button>
 
               <Link
@@ -155,9 +340,17 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdate }) => {
 
               <button
                 onClick={handleShare}
-                className="flex items-center space-x-1 text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400"
+                disabled={isSharing}
+                className={`flex items-center space-x-1 transition-colors ${
+                  hasShared
+                    ? "text-blue-500 dark:text-blue-400"
+                    : "text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400"
+                } ${
+                  isSharing ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                }`}
               >
-                <Share2 size={18} />
+                <Share2 size={18} fill={hasShared ? "currentColor" : "none"} />
+                <span>{sharesCount}</span>
               </button>
             </div>
           </div>
