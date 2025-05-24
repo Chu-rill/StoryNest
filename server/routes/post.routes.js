@@ -13,6 +13,7 @@ const {
   searchPosts,
   getUserPosts,
   sharePost,
+  deletePost,
 } = require("../controllers/post.controller");
 const { protect } = require("../middleware/jwt");
 const cloudinary = require("cloudinary");
@@ -39,6 +40,7 @@ postRoutes.put(
   protect,
   editPost
 );
+postRoutes.delete("/post/:id", protect, deletePost);
 postRoutes.post("/like/:id", protect, likePost);
 postRoutes.post("/unlike/:id", protect, unlikePost);
 postRoutes.get("/comments/:id", protect, getComments);

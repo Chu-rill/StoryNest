@@ -5,6 +5,7 @@ import {
   likePost,
   unlikePost,
   sharePost,
+  deletePost,
 } from "../../services/postService";
 import { Post } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
@@ -222,9 +223,14 @@ const PostDetailPage: React.FC = () => {
   };
 
   const confirmDelete = async () => {
+    if (!post) {
+      toast.error("Post not found");
+      return;
+    }
+
     try {
       // API call to delete the post would go here
-      // await deletePost(post.id);
+      await deletePost(post.id);
 
       setIsDeleteModalOpen(false);
       toast.success("Post deleted successfully");
@@ -331,7 +337,6 @@ const PostDetailPage: React.FC = () => {
   const formattedDate = formatDate(post.createdAt);
   const likesCount = getLikesCount();
   const sharesCount = getSharesCount();
-  console.log(post);
 
   return (
     <div className="max-w-4xl mx-auto py-6">
