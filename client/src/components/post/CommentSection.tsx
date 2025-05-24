@@ -51,11 +51,16 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
 
     setIsLoading(true);
     try {
-      const comment = await addComment(postId, newComment);
-      setComments([comment, ...comments]);
+      await addComment(postId, newComment);
+
+      // Refetch all comments instead of relying on the returned comment
+      const fetchedComments = await getComments(postId);
+      setComments(fetchedComments.comments);
+
       setNewComment("");
       toast.success("Comment added successfully");
     } catch (error) {
+      console.error("Comment error:", error);
       toast.error("Failed to add comment");
     } finally {
       setIsLoading(false);

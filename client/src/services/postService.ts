@@ -91,7 +91,7 @@ export const getComments = async (postId: string): Promise<CommentResponse> => {
 export const addComment = async (
   postId: string,
   comment: string
-): Promise<Comment> => {
+): Promise<CommentResponse> => {
   try {
     const response = await api.post<CommentResponse>(
       `/content/comment/${postId}`,
@@ -100,7 +100,7 @@ export const addComment = async (
       }
     );
 
-    return response.data.comments[0];
+    return response.data;
   } catch (error) {
     throw error;
   }
