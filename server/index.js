@@ -16,20 +16,24 @@ const app = express();
 // Configuration
 const PORT = process.env.PORT || 3001;
 const MONGODB_URL = process.env.MONGODB_URL || "mongodb://localhost:27017/blog";
-const ALLOWED_ORIGINS = [
+const allowedOrigins = [
   "http://localhost:5173",
   "https://nspire-xrhy.vercel.app",
-  "https://story-nest-mu.vercel.app/",
+  "https://story-nest-mu.vercel.app",
 ];
-
 // Middleware
 app.use(express.json());
 // app.use(cookieParser());
 app.use(
   cors({
-    origin: "*",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: false,
   })
 );
