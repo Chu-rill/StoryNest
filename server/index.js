@@ -19,6 +19,7 @@ const MONGODB_URL = process.env.MONGODB_URL || "mongodb://localhost:27017/blog";
 const ALLOWED_ORIGINS = [
   "http://localhost:5173",
   "https://nspire-xrhy.vercel.app",
+  "https://story-nest-mu.vercel.app/",
 ];
 
 // Middleware
