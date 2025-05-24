@@ -12,6 +12,7 @@ const {
   getComments,
   searchPosts,
   getUserPosts,
+  sharePost,
 } = require("../controllers/post.controller");
 const { protect } = require("../middleware/jwt");
 const cloudinary = require("cloudinary");
@@ -47,7 +48,8 @@ postRoutes.post(
   protect,
   addComment
 );
-postRoutes.delete("/comment/:postId/:commentId", protect, deleteComment);
+postRoutes.delete("/comment/:id/:commentId", protect, deleteComment);
 postRoutes.get("/user/posts/:userId", protect, getUserPosts);
+postRoutes.post("/posts/:postId/share", protect, sharePost);
 
 module.exports = postRoutes;

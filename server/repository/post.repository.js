@@ -165,6 +165,24 @@ class PostRepository {
       .populate("author", ["username"])
       .populate("comments.author", ["username"]);
   }
+
+  async updatePostShare(post) {
+    try {
+      return await post.save();
+    } catch (error) {
+      console.error("Error updating post:", error);
+      throw new Error("Database error while updating post");
+    }
+  }
+
+  async populatePostAuthor(post, fields = "username profilePicture") {
+    try {
+      return await post.populate("author", fields);
+    } catch (error) {
+      console.error("Error populating post author:", error);
+      throw new Error("Database error while populating post author");
+    }
+  }
 }
 
 module.exports = new PostRepository();

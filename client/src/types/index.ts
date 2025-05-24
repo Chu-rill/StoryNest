@@ -31,6 +31,8 @@ export interface Post {
   isLiked?: boolean;
   createdAt: string;
   updatedAt: string;
+  shares: any[];
+  shareCount: number;
 }
 
 export interface PostResponse {
@@ -43,25 +45,18 @@ export interface PostResponse {
   currentPage: number;
   limit: number;
 }
-
+export interface SharePostResponse {
+  success: string;
+  statusCode: number;
+  post: Post;
+  isNewShare: boolean;
+  message: string;
+}
 export interface SinglePostResponse {
   status: string;
   message: string;
   statusCode: number;
-  post: {
-    id: string;
-    title: string;
-    summary: string;
-    content: string;
-    image?: string;
-    tags: string[];
-    category: string;
-    author: User | null;
-    likes: any[];
-    commentsCount: number;
-    createdAt: string;
-    updatedAt: string;
-  };
+  post: Post;
 }
 
 export interface Comment {

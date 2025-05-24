@@ -161,6 +161,17 @@ exports.searchPosts = async (req, res) => {
   }
 };
 
+exports.sharePost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.user.id;
+    const share = await PostService.sharePost(postId, userId);
+    res.status(share.statusCode).json(share);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 // exports.getUserLikedPosts = async (req, res) => {
 //   try {
 //     const userId = req.params.id;

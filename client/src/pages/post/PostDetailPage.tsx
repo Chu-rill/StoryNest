@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { getPostById, likePost, unlikePost } from "../../services/postService";
+import {
+  getPostById,
+  likePost,
+  unlikePost,
+  sharePost,
+} from "../../services/postService";
 import { Post } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import Avatar from "../../components/ui/Avatar";
@@ -17,6 +22,7 @@ const PostDetailPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -35,6 +41,8 @@ const PostDetailPage: React.FC = () => {
         ...fetchedPost.post,
         likes: fetchedPost.post.likes || [],
         tags: fetchedPost.post.tags || [],
+        shares: fetchedPost.post.shares || [], // Add shares array
+        shareCount: fetchedPost.post.shareCount || 0, // Add share count
       };
       setPost(processedPost);
     } catch (error) {
@@ -63,6 +71,26 @@ const PostDetailPage: React.FC = () => {
     return !!found;
   }, [user?.id, post?.likes, isAuthenticated]);
 
+  // Check if user has already shared this post
+  const hasShared = React.useMemo(() => {
+    if (!user?.id || !isAuthenticated || !post?.shares) return false;
+
+    const found = post.shares.find((share: any) => {
+      // Handle different possible formats
+      if (typeof share === "string") return share === user.id;
+      if (typeof share === "object" && share !== null) {
+        return (
+          share.id === user.id ||
+          share._id === user.id ||
+          share.userId === user.id
+        );
+      }
+      return false;
+    });
+
+    return !!found;
+  }, [user?.id, post?.shares, isAuthenticated]);
+
   const handleLike = async () => {
     if (!post || !isAuthenticated || !user) {
       toast.error("Please log in to like posts");
@@ -86,6 +114,8 @@ const PostDetailPage: React.FC = () => {
           ...updatedPost,
           likes: updatedPost.likes || [],
           tags: updatedPost.tags || [],
+          shares: updatedPost.shares || post.shares || [],
+          shareCount: updatedPost.shareCount || post.shareCount || 0,
         };
         setPost(processedPost);
       } else {
@@ -117,19 +147,73 @@ const PostDetailPage: React.FC = () => {
     }
   };
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator
-        .share({
-          title: post?.title || "Shared post",
-          text: post?.summary || "",
+  const handleShare = async () => {
+    if (!post) return;
+
+    setIsSharing(true);
+
+    try {
+      // First, record the share in the backend
+      if (isAuthenticated && user) {
+        try {
+          const updatedPost = await sharePost(post.id);
+
+          // Update post state with new share data
+          if (updatedPost && updatedPost.post.id) {
+            const processedPost = {
+              ...updatedPost.post,
+              likes: updatedPost.post.likes || post.likes || [],
+              tags: updatedPost.post.tags || post.tags || [],
+              shares: updatedPost.post.shares || [],
+              shareCount: updatedPost.post.shareCount || 0,
+            };
+            setPost(processedPost);
+          } else {
+            // Fallback: manually update share count
+            const newShares = hasShared
+              ? post.shares
+              : [
+                  ...(post.shares || []),
+                  {
+                    id: user.id,
+                    userId: user.id,
+                    sharedAt: new Date().toISOString(),
+                  },
+                ];
+
+            setPost({
+              ...post,
+              shares: newShares,
+              shareCount: (post.shareCount || 0) + (hasShared ? 0 : 1),
+            });
+          }
+        } catch (apiError) {
+          console.error("Failed to record share:", apiError);
+          // Continue with share functionality even if API fails
+        }
+      }
+
+      // Then handle the actual sharing
+      if (navigator.share) {
+        await navigator.share({
+          title: post.title || "Shared post",
+          text: post.summary || "",
           url: window.location.href,
-        })
-        .catch((error) => console.log("Error sharing", error));
-    } else {
-      // Fallback for browsers that don't support navigator.share
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("Link copied to clipboard!");
+        });
+        toast.success("Post shared successfully!");
+      } else {
+        // Fallback for browsers that don't support navigator.share
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Link copied to clipboard!");
+      }
+    } catch (error: unknown) {
+      // Handle share cancellation or other errors
+      if (error instanceof Error && error.name !== "AbortError") {
+        console.error("Error sharing:", error);
+        toast.error("Failed to share post");
+      }
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -203,6 +287,14 @@ const PostDetailPage: React.FC = () => {
     return Array.isArray(post.likes) ? post.likes.length : 0;
   };
 
+  // Helper function to get shares count safely
+  const getSharesCount = (): number => {
+    // Use shareCount if available, otherwise fall back to shares array length
+    if (post?.shareCount !== undefined) return post.shareCount;
+    if (!post?.shares) return 0;
+    return Array.isArray(post.shares) ? post.shares.length : 0;
+  };
+
   const isAuthor = post && user && post.author && post.author.id === user.id;
 
   if (isLoading) {
@@ -234,6 +326,7 @@ const PostDetailPage: React.FC = () => {
   // Format the creation date
   const formattedDate = formatDate(post.createdAt);
   const likesCount = getLikesCount();
+  const sharesCount = getSharesCount();
 
   return (
     <div className="max-w-4xl mx-auto py-6">
@@ -339,10 +432,23 @@ const PostDetailPage: React.FC = () => {
 
               <button
                 onClick={handleShare}
-                className="flex items-center space-x-1 p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+                disabled={isSharing}
+                className={`flex items-center space-x-1 p-2 rounded-md transition-colors ${
+                  hasShared
+                    ? "text-blue-500 dark:text-blue-400"
+                    : "text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400"
+                } ${
+                  isSharing ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                }`}
               >
-                <Share2 size={20} />
-                <span>Share</span>
+                <Share2 size={20} fill={hasShared ? "currentColor" : "none"} />
+                <span>
+                  {isSharing
+                    ? "Sharing..."
+                    : `${sharesCount} ${
+                        sharesCount === 1 ? "share" : "shares"
+                      }`}
+                </span>
               </button>
             </div>
 

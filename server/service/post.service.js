@@ -367,6 +367,59 @@ class PostService {
       };
     }
   }
+
+  async sharePost(postId, userId) {
+    try {
+      const post = await this.postRepository.findPostById(postId);
+      if (!post) {
+        throw new NotFoundError("Post not found");
+      }
+
+      // Check if user has already shared this post
+      const existingShare = this._findExistingShare(post.shares, userId);
+
+      let isNewShare = false;
+      if (!existingShare) {
+        // Add the share record
+        post.shares.push({
+          userId: userId,
+          sharedAt: new Date(),
+        });
+
+        // Increment share count
+        post.shareCount = (post.shareCount || 0) + 1;
+
+        // Save the updated post
+        await this.postRepository.updatePostShare(post);
+        isNewShare = true;
+      }
+      // Populate the post with author details
+      await this.postRepository.populatePostAuthor(post);
+
+      return {
+        status: "success",
+        statusCode: 200,
+        post,
+        isNewShare,
+        message: isNewShare
+          ? "Post shared successfully"
+          : "Post already shared",
+      };
+    } catch (error) {
+      return {
+        status: "error",
+        statusCode: error.message.includes("Post not found") ? 404 : 400,
+        message: error.message,
+      };
+    }
+  }
+
+  _findExistingShare(shares, userId) {
+    return shares.find(
+      (share) =>
+        share.userId?.toString() === userId || share.toString() === userId
+    );
+  }
 }
 
 module.exports = new PostService();
