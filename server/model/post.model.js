@@ -52,12 +52,6 @@ const PostSchema = new mongoose.Schema(
           type: Date,
           default: Date.now,
         },
-        // Optional: track share method (native, clipboard, etc.)
-        shareMethod: {
-          type: String,
-          enum: ["native", "clipboard", "social"],
-          default: "native",
-        },
       },
     ],
     // Add share count for quick access (denormalized for performance)

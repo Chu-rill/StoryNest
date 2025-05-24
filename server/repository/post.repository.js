@@ -166,13 +166,19 @@ class PostRepository {
       .populate("comments.author", ["username"]);
   }
 
-  async updatePostShare(post) {
-    try {
-      return await post.save();
-    } catch (error) {
-      console.error("Error updating post:", error);
-      throw new Error("Database error while updating post");
-    }
+  async updatePostShare(postId, userId) {
+    return await Post.findByIdAndUpdate(
+      postId,
+      {
+        $push: {
+          shares: {
+            user: userId, // Make sure this matches
+            sharedAt: new Date(),
+          },
+        },
+      },
+      { new: true, runValidators: true }
+    );
   }
 
   async populatePostAuthor(post, fields = "username profilePicture") {

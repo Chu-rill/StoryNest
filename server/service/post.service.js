@@ -369,6 +369,14 @@ class PostService {
   }
 
   async sharePost(postId, userId) {
+    if (!userId) {
+      throw new Error("User ID is required for sharing a post");
+    }
+
+    if (!postId) {
+      throw new Error("Post ID is required");
+    }
+
     try {
       const post = await this.postRepository.findPostById(postId);
       if (!post) {
@@ -380,9 +388,9 @@ class PostService {
 
       let isNewShare = false;
       if (!existingShare) {
-        // Add the share record
+        // Add the share record - Fixed: use 'user' instead of 'userId'
         post.shares.push({
-          userId: userId,
+          user: userId, // ✅ Changed from 'userId' to 'user'
           sharedAt: new Date(),
         });
 
@@ -390,9 +398,10 @@ class PostService {
         post.shareCount = (post.shareCount || 0) + 1;
 
         // Save the updated post
-        await this.postRepository.updatePostShare(post);
+        await this.postRepository.updatePostShare(postId, userId);
         isNewShare = true;
       }
+
       // Populate the post with author details
       await this.postRepository.populatePostAuthor(post);
 
@@ -406,6 +415,7 @@ class PostService {
           : "Post already shared",
       };
     } catch (error) {
+      console.error("Error in sharePost:", error); // Added logging
       return {
         status: "error",
         statusCode: error.message.includes("Post not found") ? 404 : 400,
@@ -417,7 +427,8 @@ class PostService {
   _findExistingShare(shares, userId) {
     return shares.find(
       (share) =>
-        share.userId?.toString() === userId || share.toString() === userId
+        share.user?.toString() === userId || // ✅ Changed from 'userId' to 'user'
+        share.toString() === userId
     );
   }
 }
