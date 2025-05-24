@@ -57,7 +57,7 @@ const userValidation = {
       .max(30)
       .pattern(/^[a-zA-Z0-9_]+$/),
     email: Joi.string().email(),
-    bio: Joi.string().max(160),
+    bio: Joi.string().max(160).allow("").optional(), // Make it optional
     profilePicture: Joi.string().uri().allow(""),
     profileBackground: Joi.string().uri().allow(""),
   }),
