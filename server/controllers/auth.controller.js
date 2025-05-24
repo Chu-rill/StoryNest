@@ -22,7 +22,7 @@ exports.signup = async (req, res) => {
     const { username, password, email } = req.body;
     const user = await UserService.registerUser(username, password, email);
     const data = {
-      subject: "Welcome to ThreadLog",
+      subject: "Welcome to StoryNest",
       username: username,
     };
     await sendEmailWithTemplate(email, data);

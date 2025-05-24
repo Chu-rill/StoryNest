@@ -100,11 +100,13 @@ class PostRepository {
       createdAt: new Date(),
     };
 
-    return await Post.findByIdAndUpdate(
+    const updatedPost = await Post.findByIdAndUpdate(
       postId,
       { $push: { comments: comment } },
       { new: true }
     ).populate("comments.author", ["username"]);
+
+    return updatedPost.comments[updatedPost.comments.length - 1];
   }
 
   async getAllComments(postId) {

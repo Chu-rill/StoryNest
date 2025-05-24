@@ -48,7 +48,7 @@ exports.sendEmailWithTemplate = async (email, data) => {
       to: email,
       subject: data.subject,
       html: emailTemplate({
-        PlatformName: "ThreadLog",
+        PlatformName: "StoryNest",
         Username: data.username,
         title: "Welcome Email",
       }),

@@ -242,16 +242,22 @@ class PostService {
     try {
       const newComment = await this.postRepository.addComment(
         postId,
-        comment,
-        userId
+        userId,
+        comment
       );
+      console.log(newComment);
       return {
         status: "success",
         statusCode: 200,
         message: "Comment added successfully",
         comment: {
-          id: newComment._id,
-          content: newComment.content,
+          id: newComment.id,
+          text: newComment.text,
+          author: {
+            id: newComment.author.id,
+            username: newComment.author.username,
+          },
+          createdAt: newComment.createdAt,
         },
       };
     } catch (error) {
@@ -283,18 +289,18 @@ class PostService {
         message: "Comments retrieved successfully",
         statusCode: 200,
         comments: comments.map((comment) => ({
-          id: comment._id,
-          content: comment.content,
-          user: {
-            id: comment.user._id,
-            username: comment.user.username,
+          id: comment.id,
+          text: comment.text,
+          author: {
+            id: comment.author?.id,
+            username: comment.author?.username,
           },
           createdAt: comment.createdAt,
           updatedAt: comment.updatedAt,
           likes: comment.likes ? comment.likes.length : 0,
           likedBy: comment.likes
             ? comment.likes.map((like) => ({
-                id: like._id,
+                id: like.id,
                 username: like.username,
               }))
             : [],

@@ -120,7 +120,7 @@ exports.unlikePost = async (req, res) => {
 exports.addComment = async (req, res) => {
   try {
     const postId = req.params.id;
-    const { comment } = req.body.comment;
+    const { comment } = req.body;
     const userId = req.user.id;
     const result = await PostService.addComment(postId, comment, userId);
     res.status(result.statusCode).json(result);

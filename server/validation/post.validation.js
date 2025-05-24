@@ -62,7 +62,7 @@ const postValidation = {
   }),
 
   comment: Joi.object({
-    text: Joi.string().min(1).max(500).required().messages({
+    comment: Joi.string().min(1).max(500).required().messages({
       "string.min": "Comment cannot be empty",
       "string.max": "Comment cannot exceed 500 characters",
       "any.required": "Comment text is required",

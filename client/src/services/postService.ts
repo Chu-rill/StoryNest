@@ -1,5 +1,11 @@
 import api from "./api";
-import { Post, Comment, PostResponse, SinglePostResponse } from "../types";
+import {
+  Post,
+  Comment,
+  PostResponse,
+  SinglePostResponse,
+  CommentResponse,
+} from "../types";
 
 interface GetPostsParams {
   page?: number;
@@ -71,9 +77,11 @@ export const unlikePost = async (postId: string): Promise<Post> => {
   }
 };
 
-export const getComments = async (postId: string): Promise<Comment[]> => {
+export const getComments = async (postId: string): Promise<CommentResponse> => {
   try {
-    const response = await api.get<Comment[]>(`/content/comments/${postId}`);
+    const response = await api.get<CommentResponse>(
+      `/content/comments/${postId}`
+    );
     return response.data;
   } catch (error) {
     throw error;
@@ -82,13 +90,17 @@ export const getComments = async (postId: string): Promise<Comment[]> => {
 
 export const addComment = async (
   postId: string,
-  content: string
+  comment: string
 ): Promise<Comment> => {
   try {
-    const response = await api.post<Comment>(`/content/comment/${postId}`, {
-      content,
-    });
-    return response.data;
+    const response = await api.post<CommentResponse>(
+      `/content/comment/${postId}`,
+      {
+        comment,
+      }
+    );
+
+    return response.data.comments[0];
   } catch (error) {
     throw error;
   }

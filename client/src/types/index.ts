@@ -17,9 +17,6 @@ export interface UserResponse {
   profile: User;
 }
 
-// followers: any[];
-//   following: any[];
-
 export interface Post {
   id: string;
   title: string;
@@ -69,10 +66,16 @@ export interface SinglePostResponse {
 
 export interface Comment {
   id: string;
-  content: string;
+  text: string;
   author: User;
-  postId: string;
   createdAt: string;
+}
+
+export interface CommentResponse {
+  status: string;
+  statusCode: number;
+  message: string;
+  comments: Comment[];
 }
 
 export interface AuthResponse {
