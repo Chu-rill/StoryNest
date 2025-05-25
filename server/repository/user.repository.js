@@ -42,8 +42,14 @@ class UserRepository {
   async getUserProfile(userId) {
     return await User.findById(userId)
       .select("-password")
-      .populate("followers", "username")
-      .populate("following", "username");
+      .populate({
+        path: "followers",
+        select: "username profilePicture bio",
+      })
+      .populate({
+        path: "following",
+        select: "username profilePicture bio",
+      });
   }
 }
 

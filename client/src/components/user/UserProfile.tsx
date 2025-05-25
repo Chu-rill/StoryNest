@@ -114,7 +114,15 @@ const UserProfile: React.FC<UserProfileProps> = ({
           // Fallback: manually update the followers array
           const newFollowers = isCurrentlyFollowing
             ? followers.filter((f) => (f.id || f._id || f) !== user.id)
-            : [...followers, { id: user.id, username: user.username }];
+            : [
+                ...followers,
+                {
+                  id: user.id,
+                  username: user.username,
+                  profilePicture: user.profilePicture,
+                  bio: user.bio,
+                },
+              ];
 
           const updatedUserData = {
             ...currentUserData,
@@ -190,7 +198,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
       />
     );
   }
-
+  // console.log("following in UserProfile:", currentUserData);
   if (currentView === "following") {
     return (
       <FollowingPage

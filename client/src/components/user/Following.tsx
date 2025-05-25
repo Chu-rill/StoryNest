@@ -19,7 +19,6 @@ const FollowingPage: React.FC<FollowingPageProps> = ({
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>(
     {}
   );
-
   const filteredFollowing = following.filter(
     (user) =>
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -34,7 +33,6 @@ const FollowingPage: React.FC<FollowingPageProps> = ({
       setLoadingStates((prev) => ({ ...prev, [userId]: false }));
     }
   };
-  console.log("current user:", currentUser);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
