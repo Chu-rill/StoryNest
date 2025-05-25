@@ -47,6 +47,7 @@ export const getPostById = async (
     const response = await api.get<SinglePostResponse>(
       `/content/post/${postId}`
     );
+
     return response.data;
   } catch (error) {
     console.error(`Error fetching post ${postId}:`, error);

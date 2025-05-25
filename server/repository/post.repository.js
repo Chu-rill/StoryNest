@@ -7,8 +7,14 @@ class PostRepository {
 
   async findPostById(id) {
     return await Post.findById(id)
-      .populate("author", ["username"])
-      .populate("comments.author", ["username"]);
+      .populate({
+        path: "author",
+        select: "username profilePicture bio",
+      })
+      .populate({
+        path: "comments.author",
+        select: "username profilePicture",
+      });
   }
 
   async getAllPosts(query) {
@@ -29,8 +35,14 @@ class PostRepository {
       .skip(skip)
       .limit(parseInt(limit))
       .sort({ createdAt: -1 })
-      .populate("author", ["username"])
-      .populate("comments.author", ["username"]);
+      .populate({
+        path: "author",
+        select: "username profilePicture bio",
+      })
+      .populate({
+        path: "comments.author",
+        select: "username profilePicture",
+      });
 
     const total = await Post.countDocuments(findQuery);
 

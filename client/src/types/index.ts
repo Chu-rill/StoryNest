@@ -10,6 +10,18 @@ export interface User {
   createdAt: string;
 }
 
+export interface UserMod {
+  _id: string;
+  username: string;
+  email: string;
+  bio?: string;
+  profilePicture: string;
+  profileBackground: string;
+  followers: any[];
+  following: any[];
+  createdAt: string;
+}
+
 export interface UserResponse {
   message: string;
   status: string;
@@ -32,7 +44,7 @@ export interface Post {
   image?: string;
   tags: string[];
   category: string;
-  author: User | null;
+  author: UserMod | null;
   likes: any[];
   commentsCount: number;
   isLiked?: boolean;

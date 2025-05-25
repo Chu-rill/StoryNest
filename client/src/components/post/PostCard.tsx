@@ -248,9 +248,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdate }) => {
           <div className="p-4 flex items-center space-x-3">
             {post.author && (
               <>
-                <Link to={`/user/${post.author.id}`}>
+                <Link to={`/user/${post.author?.id}`}>
                   <Avatar
-                    src={post.author.profilePicture}
+                    src={post.author?.profilePicture}
                     fallback={post.author.username}
                     size="md"
                   />

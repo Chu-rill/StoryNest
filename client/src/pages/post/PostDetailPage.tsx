@@ -45,6 +45,7 @@ const PostDetailPage: React.FC = () => {
         shares: fetchedPost.post.shares || [], // Add shares array
         shareCount: fetchedPost.post.shareCount || 0, // Add share count
       };
+
       setPost(processedPost);
     } catch (error) {
       console.error("Failed to fetch post:", error);
@@ -371,7 +372,7 @@ const PostDetailPage: React.FC = () => {
           <div className="flex items-center mb-6">
             {post.author && (
               <>
-                <Link to={`/user/${post.author.id}`}>
+                <Link to={`/user/${post.author._id}`}>
                   <Avatar
                     src={post.author.profilePicture}
                     fallback={post.author.username}
@@ -381,7 +382,7 @@ const PostDetailPage: React.FC = () => {
                 </Link>
                 <div>
                   <Link
-                    to={`/user/${post.author.id}`}
+                    to={`/user/${post.author._id}`}
                     className="font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
                   >
                     {post.author.username}

@@ -87,6 +87,8 @@ class PostService {
             ? {
                 id: post.author._id,
                 username: post.author.username,
+                profilePicture: post.author.profilePicture,
+                bio: post.author.bio,
               }
             : null,
           category: post.category,
