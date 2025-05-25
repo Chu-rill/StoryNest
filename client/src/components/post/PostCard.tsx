@@ -248,7 +248,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdate }) => {
           <div className="p-4 flex items-center space-x-3">
             {post.author && (
               <>
-                <Link to={`/user/${post.author?.id}`}>
+                <Link to={`/user/${post.author?._id}`}>
                   <Avatar
                     src={post.author?.profilePicture}
                     fallback={post.author.username}
@@ -257,7 +257,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdate }) => {
                 </Link>
                 <div className="flex-1">
                   <Link
-                    to={`/user/${post.author.id}`}
+                    to={`/user/${post.author._id}`}
                     className="font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
                   >
                     {post.author.username}
