@@ -12,7 +12,7 @@ class UserService {
       // Check if user already exists
       const existingUser = await this.userRepository.findUserByEmail(email);
       if (existingUser) {
-        throw new Error("Username already exists");
+        throw new Error("User with this email already exists");
       }
 
       // Hash password

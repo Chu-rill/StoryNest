@@ -13,7 +13,10 @@ import {
   MapPin,
   Calendar,
   Link as LinkIcon,
+  Users,
 } from "lucide-react";
+import FollowersPage from "./Followers"; // Adjust import path as needed
+import FollowingPage from "./Following"; // Adjust import path as needed
 
 interface UserProfileProps {
   userData: User;
@@ -28,6 +31,9 @@ const UserProfile: React.FC<UserProfileProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [currentUserData, setCurrentUserData] = useState(userData);
+  const [currentView, setCurrentView] = useState<
+    "profile" | "followers" | "following"
+  >("profile");
 
   // Update local state when userData prop changes
   useEffect(() => {
@@ -53,23 +59,18 @@ const UserProfile: React.FC<UserProfileProps> = ({
       return false;
     });
 
-    // console.log("Follow check:", {
-    //   userId: user.id,
-    //   followers: followers,
-    //   found: found,
-    //   isFollowing: !!found,
-    // });
-
     return !!found;
   }, [user?.id, followers, isAuthenticated]);
 
-  const handleFollowToggle = async () => {
+  const handleFollowToggle = async (targetUserId?: string) => {
+    const userIdToToggle = targetUserId || currentUserData.id;
+
     if (!isAuthenticated || !user?.id) {
       toast.error("Please log in to follow users");
       return;
     }
 
-    if (isOwnProfile) {
+    if (user.id === userIdToToggle) {
       toast.error("You cannot follow yourself");
       return;
     }
@@ -79,48 +80,62 @@ const UserProfile: React.FC<UserProfileProps> = ({
     setIsLoading(true);
 
     try {
-      // console.log(
-      //   "Attempting to",
-      //   isFollowing ? "unfollow" : "follow",
-      //   currentUserData.username
-      // );
-
       let updatedUser;
-      if (isFollowing) {
-        updatedUser = await unfollowUser(currentUserData.id);
+
+      // Check if we're following the target user
+      const isCurrentlyFollowing = targetUserId
+        ? user.following?.some((followedUser: any) => {
+            if (typeof followedUser === "string")
+              return followedUser === targetUserId;
+            if (typeof followedUser === "object" && followedUser !== null) {
+              return (
+                followedUser.id === targetUserId ||
+                followedUser._id === targetUserId
+              );
+            }
+            return false;
+          })
+        : isFollowing;
+
+      if (isCurrentlyFollowing) {
+        updatedUser = await unfollowUser(userIdToToggle);
       } else {
-        updatedUser = await followUser(currentUserData.id);
+        updatedUser = await followUser(userIdToToggle);
       }
 
-      // console.log("API Response:", updatedUser);
+      // If we're updating the main profile user
+      if (!targetUserId || targetUserId === currentUserData.id) {
+        if (updatedUser && updatedUser.id) {
+          setCurrentUserData(updatedUser);
+          if (onUpdateUser) {
+            onUpdateUser(updatedUser);
+          }
+        } else {
+          // Fallback: manually update the followers array
+          const newFollowers = isCurrentlyFollowing
+            ? followers.filter((f) => (f.id || f._id || f) !== user.id)
+            : [...followers, { id: user.id, username: user.username }];
 
-      // If API returns updated user data, use it
-      if (updatedUser && updatedUser.id) {
-        setCurrentUserData(updatedUser);
-        if (onUpdateUser) {
-          onUpdateUser(updatedUser);
-        }
-      } else {
-        // Fallback: manually update the followers array
-        const newFollowers = isFollowing
-          ? followers.filter((f) => (f.id || f._id || f) !== user.id)
-          : [...followers, { id: user.id, username: user.username }];
+          const updatedUserData = {
+            ...currentUserData,
+            followers: newFollowers,
+          };
 
-        const updatedUserData = {
-          ...currentUserData,
-          followers: newFollowers,
-        };
-
-        setCurrentUserData(updatedUserData);
-        if (onUpdateUser) {
-          onUpdateUser(updatedUserData);
+          setCurrentUserData(updatedUserData);
+          if (onUpdateUser) {
+            onUpdateUser(updatedUserData);
+          }
         }
       }
+
+      const username = targetUserId
+        ? followers.find((f) => f.id === targetUserId)?.username || "user"
+        : currentUserData.username;
 
       toast.success(
-        isFollowing
-          ? `Unfollowed ${currentUserData.username}`
-          : `Now following ${currentUserData.username}`
+        isCurrentlyFollowing
+          ? `Unfollowed ${username}`
+          : `Now following ${username}`
       );
     } catch (error) {
       console.error("Follow/unfollow error:", error);
@@ -152,6 +167,40 @@ const UserProfile: React.FC<UserProfileProps> = ({
     cleanedBackgroundUrl !== "" &&
     cleanedBackgroundUrl !== "null" &&
     cleanedBackgroundUrl !== "undefined";
+
+  // Handle back navigation
+  const handleBack = () => {
+    setCurrentView("profile");
+  };
+
+  // Get current user's following list for the followers page
+  const getCurrentUserFollowing = () => {
+    return user?.following || [];
+  };
+
+  // Render based on current view
+  if (currentView === "followers") {
+    return (
+      <FollowersPage
+        followers={followers}
+        currentUser={user}
+        onBack={handleBack}
+        followingList={getCurrentUserFollowing()}
+        onFollowToggle={handleFollowToggle}
+      />
+    );
+  }
+
+  if (currentView === "following") {
+    return (
+      <FollowingPage
+        following={following}
+        currentUser={user}
+        onBack={handleBack}
+        onFollowToggle={handleFollowToggle}
+      />
+    );
+  }
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
@@ -213,7 +262,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
               </Link>
             ) : (
               <Button
-                onClick={handleFollowToggle}
+                onClick={() => handleFollowToggle()}
                 variant={isFollowing ? "outline" : "primary"}
                 disabled={isLoading}
                 icon={
@@ -232,24 +281,30 @@ const UserProfile: React.FC<UserProfileProps> = ({
           </div>
         )}
 
-        {/* Stats */}
+        {/* Stats - Now Clickable */}
         <div className="mt-6 grid grid-cols-2 gap-4 border-t border-gray-200 dark:border-gray-700 pt-5">
-          <div className="text-center">
-            <span className="block text-2xl font-bold text-gray-900 dark:text-white">
+          <button
+            onClick={() => setCurrentView("followers")}
+            className="text-center hover:bg-gray-50 dark:hover:bg-gray-700 p-3 rounded-lg transition-colors group"
+          >
+            <span className="block text-2xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
               {followers.length?.toLocaleString() || 0}
             </span>
-            <span className="block text-sm text-gray-500 dark:text-gray-400">
+            <span className="block text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400">
               Followers
             </span>
-          </div>
-          <div className="text-center">
-            <span className="block text-2xl font-bold text-gray-900 dark:text-white">
+          </button>
+          <button
+            onClick={() => setCurrentView("following")}
+            className="text-center hover:bg-gray-50 dark:hover:bg-gray-700 p-3 rounded-lg transition-colors group"
+          >
+            <span className="block text-2xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
               {following.length?.toLocaleString() || 0}
             </span>
-            <span className="block text-sm text-gray-500 dark:text-gray-400">
+            <span className="block text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400">
               Following
             </span>
-          </div>
+          </button>
         </div>
       </div>
     </div>
