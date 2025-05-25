@@ -17,6 +17,13 @@ export interface UserResponse {
   profile: User;
 }
 
+export interface UpdateUserResponse {
+  message: string;
+  status: string;
+  statusCode: number;
+  user: User;
+}
+
 export interface Post {
   id: string;
   title: string;

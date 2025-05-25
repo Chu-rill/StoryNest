@@ -22,33 +22,11 @@ const FollowersPage: React.FC<FollowersPageProps> = ({
     {}
   );
 
-  const createEnhancedUser = (user: any, currentUser: any) => {
-    const enhancedUser = {
-      // User's own data takes priority
-      ...user,
-
-      // Fill in missing fields from currentUser or defaults
-      profilePicture:
-        user.profilePicture ||
-        currentUser?.profilePicture ||
-        "/default-avatar.png",
-      bio: user.bio || currentUser?.bio || "",
-
-      // Ensure required fields exist
-      id: user.id || user._id,
-      username: user.username || `User ${user.id || user._id}`,
-    };
-
-    return enhancedUser;
-  };
-
-  const filteredFollowers = followers
-    .map((user) => createEnhancedUser(user, currentUser))
-    .filter(
-      (user) =>
-        user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (user.bio && user.bio.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+  const filteredFollowers = followers.filter(
+    (user) =>
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.bio && user.bio.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   const handleFollowToggle = async (userId: string) => {
     setLoadingStates((prev) => ({ ...prev, [userId]: true }));

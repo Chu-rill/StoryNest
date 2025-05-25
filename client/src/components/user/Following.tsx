@@ -20,34 +20,11 @@ const FollowingPage: React.FC<FollowingPageProps> = ({
     {}
   );
 
-  // Create enhanced user objects by merging with currentUser data
-  const createEnhancedUser = (user: any, currentUser: any) => {
-    const enhancedUser = {
-      // User's own data takes priority
-      ...user,
-
-      // Fill in missing fields from currentUser or defaults
-      profilePicture:
-        user.profilePicture ||
-        currentUser?.profilePicture ||
-        "/default-avatar.png",
-      bio: user.bio || currentUser?.bio || "",
-
-      // Ensure required fields exist
-      id: user.id || user._id,
-      username: user.username || `User ${user.id || user._id}`,
-    };
-
-    return enhancedUser;
-  };
-
-  const filteredFollowing = following
-    .map((user) => createEnhancedUser(user, currentUser))
-    .filter(
-      (user) =>
-        user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (user.bio && user.bio.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+  const filteredFollowing = following.filter(
+    (user) =>
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.bio && user.bio.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   const handleFollowToggle = async (userId: string) => {
     setLoadingStates((prev) => ({ ...prev, [userId]: true }));
@@ -57,9 +34,7 @@ const FollowingPage: React.FC<FollowingPageProps> = ({
       setLoadingStates((prev) => ({ ...prev, [userId]: false }));
     }
   };
-
-  //   console.log("current user:", currentUser);
-  //   console.log("enhanced following:", filteredFollowing);
+  console.log("current user:", currentUser);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
@@ -86,7 +61,7 @@ const FollowingPage: React.FC<FollowingPageProps> = ({
         </div>
 
         {/* Search */}
-        <div className="relative mb-6">
+        {/* <div className="relative mb-6">
           <Search
             className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"
             size={20}
@@ -98,7 +73,7 @@ const FollowingPage: React.FC<FollowingPageProps> = ({
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
-        </div>
+        </div> */}
 
         {/* Following List */}
         <div className="space-y-3">
@@ -110,7 +85,7 @@ const FollowingPage: React.FC<FollowingPageProps> = ({
                 isFollowing={true}
                 onFollowToggle={handleFollowToggle}
                 isLoading={loadingStates[user.id]}
-                currentUserId={currentUser?.id}
+                currentUserId={currentUser.id}
               />
             ))
           ) : (

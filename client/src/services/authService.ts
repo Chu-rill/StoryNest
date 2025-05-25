@@ -1,5 +1,5 @@
 import api from "./api";
-import { User, AuthResponse, UserResponse } from "../types";
+import { User, AuthResponse, UserResponse, UpdateUserResponse } from "../types";
 
 export const loginUser = async (
   email: string,
@@ -54,9 +54,12 @@ export const getUserProfile = async (): Promise<UserResponse> => {
 
 export const updateUserProfile = async (
   userData: Partial<User>
-): Promise<User> => {
+): Promise<UpdateUserResponse> => {
   try {
-    const response = await api.put<User>("/auth/update", userData);
+    const response = await api.put<UpdateUserResponse>(
+      "/auth/update",
+      userData
+    );
     return response.data;
   } catch (error) {
     throw error;

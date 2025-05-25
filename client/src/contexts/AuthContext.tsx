@@ -120,7 +120,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     try {
       const updatedUser = await updateUserProfile(userData);
-      setUser(updatedUser);
+      setUser(updatedUser.user);
     } catch (error) {
       throw error;
     } finally {

@@ -216,7 +216,10 @@ class UserService {
           followers: updatedUser.followers,
           following: updatedUser.following,
           bio: updatedUser.bio,
+          email: updatedUser.email,
           createdAt: updatedUser.createdAt,
+          profilePicture: updatedUser.profilePicture,
+          profileBackground: updatedUser.profileBackground,
         },
       };
     } catch (error) {
