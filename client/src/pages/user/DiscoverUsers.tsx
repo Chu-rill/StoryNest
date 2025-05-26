@@ -10,13 +10,6 @@ const getUserFollowing = async () => {
   return [];
 };
 
-// Mock current user for demo
-const mockCurrentUser = {
-  id: "current-user",
-  username: "currentuser",
-  email: "current@example.com",
-};
-
 const UsersPage: React.FC = () => {
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<UserMod[]>([]);
