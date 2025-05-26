@@ -42,6 +42,15 @@ exports.profile = async (req, res) => {
   }
 };
 
+exports.users = async (req, res) => {
+  try {
+    const users = await UserService.getAllUsers();
+    res.status(users.statusCode).json(users);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 exports.followUser = async (req, res) => {
   try {
     const followerUserId = req.user.id;

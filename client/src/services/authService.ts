@@ -1,5 +1,11 @@
 import api from "./api";
-import { User, AuthResponse, UserResponse, UpdateUserResponse } from "../types";
+import {
+  User,
+  AuthResponse,
+  UserResponse,
+  UpdateUserResponse,
+  AllUsersResponse,
+} from "../types";
 
 export const loginUser = async (
   email: string,
@@ -46,6 +52,15 @@ export const logoutUser = async (): Promise<void> => {
 export const getUserProfile = async (): Promise<UserResponse> => {
   try {
     const response = await api.get<UserResponse>("/auth/profile");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAllUsers = async (): Promise<AllUsersResponse> => {
+  try {
+    const response = await api.get<AllUsersResponse>("/auth/users");
     return response.data;
   } catch (error) {
     throw error;

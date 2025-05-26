@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { getPosts } from "../../services/postService";
 import { Post } from "../../types";
 import PostCard from "../../components/post/PostCard";
-import { Newspaper, TrendingUp, Filter } from "lucide-react";
+import { Newspaper, TrendingUp, Filter, Users } from "lucide-react";
 import Button from "../../components/ui/Button";
+import { Link } from "react-router-dom";
 
 const HomePage: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -132,6 +133,13 @@ const HomePage: React.FC = () => {
                 <TrendingUp size={16} />
                 <span>Popular</span>
               </button>
+              <Link
+                to="/users"
+                className="flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                <Users size={16} />
+                <span>People</span>
+              </Link>
             </div>
 
             <div className="lg:hidden">
@@ -194,6 +202,13 @@ const HomePage: React.FC = () => {
                     </a>
                   ))}
                 </div>
+                <Link
+                  to="/users"
+                  className="flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  <Users size={16} />
+                  <span>People</span>
+                </Link>
               </div>
             </div>
           )}

@@ -9,6 +9,8 @@ const {
   unfollowUser,
   getUserProfile,
   updateUserProfile,
+  users,
+  getAllUsers,
 } = require("../controllers/auth.controller");
 const { protect } = require("../middleware/jwt");
 const validator = require("../middleware/validation");
@@ -29,6 +31,7 @@ authRoutes.post(
 
 // Protected routes
 authRoutes.get("/profile", protect, profile);
+authRoutes.get("/users", protect, users);
 authRoutes.post("/follow/:id", protect, followUser);
 authRoutes.post("/unfollow/:id", protect, unfollowUser);
 authRoutes.put(

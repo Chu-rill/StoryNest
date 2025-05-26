@@ -229,6 +229,24 @@ class UserService {
       };
     }
   }
+
+  async getAllUsers() {
+    try {
+      const users = await this.userRepository.findAllUsers();
+      return {
+        status: "success",
+        statusCode: 200,
+        message: "Users retrieved successfully",
+        users: users,
+      };
+    } catch (error) {
+      return {
+        status: "error",
+        statusCode: 500,
+        message: error.message,
+      };
+    }
+  }
 }
 
 module.exports = new UserService();

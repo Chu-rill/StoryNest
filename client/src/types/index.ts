@@ -29,6 +29,13 @@ export interface UserResponse {
   profile: User;
 }
 
+export interface AllUsersResponse {
+  message: string;
+  status: string;
+  statusCode: number;
+  users: UserMod[];
+}
+
 export interface UpdateUserResponse {
   message: string;
   status: string;

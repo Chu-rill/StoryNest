@@ -9,6 +9,10 @@ class UserRepository {
     return await User.findById(id);
   }
 
+  async findAllUsers() {
+    return await User.find().select("-password");
+  }
+
   async findUserByEmail(email) {
     return await User.findOne({ email });
   }

@@ -23,6 +23,7 @@ import CreatePostPage from "./pages/post/CreatePostPage";
 import ProfilePage from "./pages/user/ProfilePage";
 import EditProfilePage from "./pages/user/EditProfilePage";
 import EditPostPage from "./pages/post/EditPostPage";
+import UsersPage from "./pages/user/DiscoverUsers";
 
 function App() {
   return (
@@ -46,6 +47,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <CreatePostPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="users"
+                element={
+                  <ProtectedRoute>
+                    <UsersPage />
                   </ProtectedRoute>
                 }
               />
