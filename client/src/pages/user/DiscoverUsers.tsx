@@ -3,16 +3,7 @@ import { Users, Search, Filter, UserCheck, TrendingUp } from "lucide-react";
 import { getAllUsers } from "../../services/authService";
 import { AllUsersResponse, User, UserMod } from "../../types/index";
 import { useAuth } from "../../contexts/AuthContext";
-// Mock service functions - replace with your actual API calls
-const followUser = async (userId: string) => {
-  // Replace with actual API call
-  console.log("Following user:", userId);
-};
-
-const unfollowUser = async (userId: string) => {
-  // Replace with actual API call
-  console.log("Unfollowing user:", userId);
-};
+import { followUser, unfollowUser } from "../../services/authService";
 
 const getUserFollowing = async () => {
   // Replace with actual API call

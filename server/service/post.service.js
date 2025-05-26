@@ -132,6 +132,8 @@ class PostService {
           summary: post.summary,
           content: post.content,
           image: post.image,
+          likes: post.likes ? post.likes.length : 0,
+          commentsCount: post.comments ? post.comments.length : 0,
         })),
         totalPosts: posts.length,
         totalPages: Math.ceil(posts.length / 20),
