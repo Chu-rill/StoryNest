@@ -12,6 +12,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import Avatar from "../../components/ui/Avatar";
 import Button from "../../components/ui/Button";
 import CommentSection from "../../components/post/CommentSection";
+import MarkdownRenderer from "../../components/post/MarkdownRenderer";
+import { PageLoader } from "../../components/ui/LoadingSpinner";
 import { formatDistanceToNow, isValid, parseISO } from "date-fns";
 import { Heart, Share2, Edit, Trash2, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
@@ -309,11 +311,7 @@ const PostDetailPage: React.FC = () => {
     post && user && post.author && getAuthorId(post.author) === getUserId(user);
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-[calc(100vh-64px)]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <PageLoader text="Loading post..." />;
   }
 
   if (error || !post) {
@@ -414,10 +412,16 @@ const PostDetailPage: React.FC = () => {
           )}
 
           {/* Content */}
-          <div
-            className="prose dark:prose-invert max-w-none mb-8"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+          <div className="mb-8">
+            {post.format === 'markdown' ? (
+              <MarkdownRenderer content={post.content} />
+            ) : (
+              <div
+                className="prose dark:prose-invert max-w-none"
+                dangerouslySetInnerHTML={{ __html: post.content }}
+              />
+            )}
+          </div>
 
           {/* Action buttons */}
           <div className="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">

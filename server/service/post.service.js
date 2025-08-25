@@ -18,6 +18,7 @@ class PostService {
           title: post.title,
           summary: post.summary,
           content: post.content,
+          format: post.format,
           image: post.image,
         },
       };
@@ -45,6 +46,7 @@ class PostService {
           title: post.title,
           summary: post.summary,
           content: post.content,
+          format: post.format,
           image: post.image,
           category: post.category,
           author: post.author,
@@ -82,6 +84,7 @@ class PostService {
           title: post.title,
           summary: post.summary,
           content: post.content,
+          format: post.format,
           image: post.image,
           author: post.author
             ? {
