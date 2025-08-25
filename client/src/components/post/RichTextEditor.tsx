@@ -37,12 +37,12 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   ];
 
   return (
-    <div className="mb-4">
+    <div className="mb-6">
       <div 
         className={`
-          bg-white dark:bg-gray-800 rounded-md border
-          ${error ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'}
-          overflow-hidden transition duration-200
+          bg-white dark:bg-gray-800 rounded-lg border-2 shadow-sm
+          ${error ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'}
+          overflow-hidden transition-all duration-200 hover:border-gray-300 dark:hover:border-gray-600
         `}
       >
         <ReactQuill
@@ -56,7 +56,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         />
       </div>
       {error && (
-        <p className="mt-1 text-sm text-red-600 dark:text-red-500">{error}</p>
+        <div className="mt-2 flex items-center space-x-1">
+          <span className="text-red-500 text-sm">⚠</span>
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        </div>
       )}
       <style jsx>{`
         .ql-toolbar {

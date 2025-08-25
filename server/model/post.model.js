@@ -13,6 +13,11 @@ const PostSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    format: {
+      type: String,
+      enum: ["rich", "markdown"],
+      default: "rich",
+    },
     image: {
       type: String,
     },

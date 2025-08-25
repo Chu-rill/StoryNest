@@ -48,6 +48,7 @@ export interface Post {
   title: string;
   summary: string;
   content: string;
+  format?: 'rich' | 'markdown';
   image?: string;
   tags: string[];
   category: string;
