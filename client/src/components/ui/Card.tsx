@@ -14,9 +14,9 @@ const Card: React.FC<CardProps> = ({
   variant = 'default'
 }) => {
   const variantClasses = {
-    default: 'bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700',
-    elevated: 'bg-white dark:bg-gray-800 shadow-lg border-0',
-    outlined: 'bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 shadow-none'
+    default: 'bg-white dark:bg-surface shadow-md border border-gray-200 dark:border-surface-light',
+    elevated: 'bg-white dark:bg-surface shadow-lg shadow-primary/10 border-0',
+    outlined: 'bg-white dark:bg-surface border-2 border-gray-200 dark:border-primary/20 shadow-none'
   };
 
   return (
@@ -26,7 +26,7 @@ const Card: React.FC<CardProps> = ({
         rounded-xl
         overflow-hidden 
         transition-all duration-300
-        ${hoverable ? 'hover:-translate-y-2 hover:shadow-xl hover:shadow-blue-500/10' : ''}
+        ${hoverable ? 'hover:-translate-y-2 hover:shadow-xl hover:shadow-primary/20' : ''}
         ${className}
       `}
     >
@@ -40,7 +40,7 @@ export const CardHeader: React.FC<{ children: React.ReactNode; className?: strin
   className = '' 
 }) => {
   return (
-    <div className={`p-6 border-b border-gray-100 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-750 ${className}`}>
+    <div className={`p-6 border-b border-gray-100 dark:border-surface-light bg-gray-50/50 dark:bg-surface-light/50 ${className}`}>
       {children}
     </div>
   );
@@ -58,7 +58,7 @@ export const CardFooter: React.FC<{ children: React.ReactNode; className?: strin
   className = '' 
 }) => {
   return (
-    <div className={`p-6 border-t border-gray-100 dark:border-gray-700/50 bg-gray-50/30 dark:bg-gray-800/30 ${className}`}>
+    <div className={`p-6 border-t border-gray-100 dark:border-surface-light bg-gray-50/30 dark:bg-surface-light/30 ${className}`}>
       {children}
     </div>
   );

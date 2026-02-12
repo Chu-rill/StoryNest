@@ -60,20 +60,20 @@ const Modal: React.FC<ModalProps> = ({
       <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
         <div 
           className={`
-            w-full ${sizeClasses[size]} bg-white dark:bg-gray-800 rounded-lg shadow-xl 
+            w-full ${sizeClasses[size]} bg-white dark:bg-surface rounded-lg shadow-xl shadow-primary/20
             transform transition-all duration-300 ease-in-out
-            animate-in fade-in zoom-in-95
+            animate-in fade-in zoom-in-95 border border-gray-200 dark:border-surface-light
           `}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           {title && (
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-surface-light">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h3>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none"
+                className="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary focus:outline-none transition-colors"
               >
                 <X size={20} />
               </button>

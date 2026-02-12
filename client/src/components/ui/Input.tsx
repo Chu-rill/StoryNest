@@ -30,11 +30,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             className={`
-              px-4 py-3 bg-white dark:bg-gray-800 border-2
+              px-4 py-3 bg-white dark:bg-surface border-2
               ${
                 error
-                  ? "border-red-500 focus:ring-red-500/20 focus:border-red-500 bg-red-50/50 dark:bg-red-900/10"
-                  : "border-gray-200 dark:border-gray-700 focus:ring-blue-500/20 focus:border-blue-500 hover:border-gray-300 dark:hover:border-gray-600"
+                  ? "border-accent focus:ring-accent/20 focus:border-accent bg-accent/5 dark:bg-accent/10"
+                  : "border-gray-200 dark:border-surface-light focus:ring-primary/20 focus:border-primary hover:border-gray-300 dark:hover:border-primary/40"
               }
               text-gray-900 dark:text-gray-100 rounded-lg shadow-sm
               focus:outline-none focus:ring-4
@@ -48,14 +48,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           />
           {error && (
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-              <AlertCircle className="h-5 w-5 text-red-500" />
+              <AlertCircle className="h-5 w-5 text-accent" />
             </div>
           )}
         </div>
         {error && (
           <div className="mt-2 flex items-center space-x-1">
-            <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <AlertCircle size={14} className="text-accent flex-shrink-0" />
+            <p className="text-sm text-accent dark:text-accent-300">{error}</p>
           </div>
         )}
       </div>

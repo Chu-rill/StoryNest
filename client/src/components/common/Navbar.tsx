@@ -57,14 +57,14 @@ const Navbar: React.FC = () => {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <nav className="sticky top-0 z-10 bg-white dark:bg-surface shadow-md border-b border-gray-200 dark:border-surface-light backdrop-blur-sm dark:backdrop-blur-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo and brand */}
           <div className="flex items-center">
             <Link
               to="/"
-              className="flex items-center text-xl font-bold text-blue-600 dark:text-blue-400"
+              className="flex items-center text-xl font-bold text-primary hover:text-primary-600 transition-colors"
             >
               <span className="mr-2">StoryNest</span>
             </Link>
@@ -78,7 +78,7 @@ const Navbar: React.FC = () => {
                 placeholder="Search posts, users, tags..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full py-1.5 pl-10 pr-4 rounded-full text-sm bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+                className="w-full py-1.5 pl-10 pr-4 rounded-full text-sm bg-gray-100 dark:bg-surface-light border border-gray-300 dark:border-surface-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors duration-200 text-gray-900 dark:text-gray-100"
               />
               <Search
                 size={18}
@@ -96,16 +96,16 @@ const Navbar: React.FC = () => {
               <>
                 <Link
                   to="/create-post"
-                  className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  className="p-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
                 >
                   <PenSquare size={20} />
                 </Link>
-                <button className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                <button className="p-2 text-gray-700 dark:text-gray-300 hover:text-secondary transition-colors">
                   <BellRing size={20} />
                 </button>
                 <button
                   onClick={toggleTheme}
-                  className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  className="p-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
                 >
                   {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
                 </button>
@@ -121,11 +121,11 @@ const Navbar: React.FC = () => {
                     />
                   </button>
                   {isDropdownOpen && (
-                    <div className="absolute right-0 w-48 mt-2 origin-top-right bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg">
+                    <div className="absolute right-0 w-48 mt-2 origin-top-right bg-white dark:bg-surface border border-gray-200 dark:border-surface-light rounded-md shadow-lg shadow-primary/10">
                       <div className="py-1">
                         <Link
                           to="/profile"
-                          className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-light transition-colors"
                           onClick={() => setIsDropdownOpen(false)}
                         >
                           <User size={16} className="mr-2" />
@@ -150,7 +150,7 @@ const Navbar: React.FC = () => {
               <>
                 <button
                   onClick={toggleTheme}
-                  className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  className="p-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
                 >
                   {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
                 </button>
@@ -170,7 +170,7 @@ const Navbar: React.FC = () => {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none"
+              className="text-gray-700 dark:text-gray-300 hover:text-primary focus:outline-none transition-colors"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -180,7 +180,7 @@ const Navbar: React.FC = () => {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden px-2 pt-2 pb-4 space-y-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+        <div className="md:hidden px-2 pt-2 pb-4 space-y-3 bg-white dark:bg-surface border-t border-gray-200 dark:border-surface-light">
           {/* Search form - mobile */}
           <form onSubmit={handleSearch} className="relative mb-3">
             <input
@@ -188,7 +188,7 @@ const Navbar: React.FC = () => {
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full py-2 pl-10 pr-4 rounded-md text-sm bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full py-2 pl-10 pr-4 rounded-md text-sm bg-gray-100 dark:bg-surface-light border border-gray-300 dark:border-surface-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 dark:text-gray-100"
             />
             <Search
               size={18}
@@ -203,21 +203,21 @@ const Navbar: React.FC = () => {
             <>
               <Link
                 to="/profile"
-                className="block py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                className="block py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-light rounded-md transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Profile
               </Link>
               <Link
                 to="/create-post"
-                className="block py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                className="block py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-light rounded-md transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Create Post
               </Link>
               <button
                 onClick={toggleTheme}
-                className="flex items-center w-full py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                className="flex items-center w-full py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-light rounded-md transition-colors"
               >
                 {theme === "dark" ? (
                   <Sun size={18} className="mr-2" />
@@ -231,7 +231,7 @@ const Navbar: React.FC = () => {
                   handleLogout();
                   setIsMenuOpen(false);
                 }}
-                className="flex items-center w-full py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                className="flex items-center w-full py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-light rounded-md transition-colors"
               >
                 <LogOut size={18} className="mr-2" />
                 Logout
@@ -241,21 +241,21 @@ const Navbar: React.FC = () => {
             <>
               <Link
                 to="/login"
-                className="block py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                className="block py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-light rounded-md transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Log in
               </Link>
               <Link
                 to="/register"
-                className="block py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                className="block py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-light rounded-md transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Sign up
               </Link>
               <button
                 onClick={toggleTheme}
-                className="flex items-center w-full py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                className="flex items-center w-full py-2 px-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-light rounded-md transition-colors"
               >
                 {theme === "dark" ? (
                   <Sun size={18} className="mr-2" />

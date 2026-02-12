@@ -2,14 +2,14 @@ import React from 'react';
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
-  color?: 'blue' | 'white' | 'gray' | 'purple' | 'green';
+  color?: 'primary' | 'secondary' | 'accent' | 'white' | 'gray';
   className?: string;
   text?: string;
 }
 
 const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   size = 'md',
-  color = 'blue',
+  color = 'primary',
   className = '',
   text,
 }) => {
@@ -21,11 +21,11 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   };
 
   const colorClasses = {
-    blue: 'text-blue-600 dark:text-blue-400',
+    primary: 'text-primary',
+    secondary: 'text-secondary',
+    accent: 'text-accent',
     white: 'text-white',
-    gray: 'text-gray-600 dark:text-gray-400',
-    purple: 'text-purple-600 dark:text-purple-400',
-    green: 'text-green-600 dark:text-green-400',
+    gray: 'text-gray-400',
   };
 
   const textSizeClasses = {
@@ -75,14 +75,14 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 // Preset loading components for common use cases
 export const PageLoader: React.FC<{ text?: string }> = ({ text = "Loading..." }) => (
   <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
-    <LoadingSpinner size="xl" color="blue" />
-    <p className="text-gray-600 dark:text-gray-400 text-lg">{text}</p>
+    <LoadingSpinner size="xl" color="primary" />
+    <p className="text-gray-400 text-lg">{text}</p>
   </div>
 );
 
 export const InlineLoader: React.FC<{ text?: string }> = ({ text = "Loading..." }) => (
   <div className="flex items-center justify-center py-4">
-    <LoadingSpinner size="md" color="blue" text={text} />
+    <LoadingSpinner size="md" color="primary" text={text} />
   </div>
 );
 

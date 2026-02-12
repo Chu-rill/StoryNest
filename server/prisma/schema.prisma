@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                String  @id @default(uuid())
+  username          String  @unique @db.VarChar(30)
+  password          String?
+  email             String? @unique
+  bio               String? @db.VarChar(160)
+  profilePicture    String  @default("")
+  profileBackground String  @default("")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  posts    Post[]    @relation("UserPosts")
+  comments Comment[]
+  shares   Share[]
+  likes    Like[]
+
+  // Self-referential many-to-many for followers/following
+  followers Follow[] @relation("UserFollowers")
+  following Follow[] @relation("UserFollowing")
+
+  @@map("users")
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("UserFollowers", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@map("follows")
+}
+
+enum PostFormat {
+  rich
+  markdown
+}
+
+enum Category {
+  Technology
+  Travel
+  Food
+  Lifestyle
+  Other
+}
+
+model Post {
+  id         String     @id @default(uuid())
+  title      String     @db.VarChar(100)
+  summary    String?    @db.VarChar(200)
+  content    String
+  format     PostFormat @default(rich)
+  image      String?
+  authorId   String
+  shareCount Int        @default(0)
+  tags       String[]
+  category   Category   @default(Other)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  // Relations
+  author   User      @relation("UserPosts", fields: [authorId], references: [id], onDelete: Cascade)
+  comments Comment[]
+  shares   Share[]
+  likes    Like[]
+
+  @@index([authorId, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+  @@index([shareCount(sort: Desc)])
+  @@map("posts")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  text      String   @db.VarChar(500)
+  postId    String
+  authorId  String
+  createdAt DateTime @default(now())
+
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([authorId])
+  @@map("comments")
+}
+
+model Share {
+  id       String   @id @default(uuid())
+  postId   String
+  userId   String
+  sharedAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([postId])
+  @@index([userId])
+  @@map("shares")
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([postId])
+  @@index([userId])
+  @@map("likes")
+}
