@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 const dotenv = require("dotenv").config();
 const errorHandler = require("./middleware/error.handler");
+const passport = require("./config/passport");
 
 // Route imports
 const authRoutes = require("./routes/auth.routes");
@@ -23,7 +24,8 @@ const allowedOrigins = [
 ];
 // Middleware
 app.use(express.json());
-// app.use(cookieParser());
+app.use(cookieParser());
+app.use(passport.initialize());
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -34,7 +36,7 @@ app.use(
       }
     },
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: false,
+    credentials: true,
   })
 );
 //error handling middleware

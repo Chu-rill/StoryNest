@@ -1,5 +1,7 @@
 const UserService = require("../service/user.service");
 const { sendEmailWithTemplate } = require("../utils/email");
+const jwt = require("jsonwebtoken");
+const passport = require("passport");
 
 exports.login = async (req, res) => {
   try {
@@ -120,4 +122,55 @@ exports.updateUserProfile = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
+};
+
+// Google OAuth
+exports.googleAuth = passport.authenticate("google", {
+  scope: ["profile", "email"],
+});
+
+exports.googleAuthCallback = (req, res, next) => {
+  passport.authenticate("google", { session: false }, (err, user, info) => {
+    if (err) {
+      console.error("Google auth error:", err);
+      return res.redirect(
+        `${process.env.CLIENT_URL}/login?error=authentication_failed`
+      );
+    }
+
+    if (!user) {
+      return res.redirect(
+        `${process.env.CLIENT_URL}/login?error=no_user_found`
+      );
+    }
+
+    try {
+      // Generate JWT token
+      const token = jwt.sign(
+        { id: user._id, username: user.username },
+        process.env.JWT_SECRET,
+        { expiresIn: "4h" }
+      );
+
+      // Redirect to client with token
+      res.redirect(
+        `${process.env.CLIENT_URL}/auth/callback?token=${token}&user=${encodeURIComponent(
+          JSON.stringify({
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            profilePicture: user.profilePicture,
+            bio: user.bio,
+            followers: user.followers,
+            following: user.following,
+          })
+        )}`
+      );
+    } catch (error) {
+      console.error("Token generation error:", error);
+      res.redirect(
+        `${process.env.CLIENT_URL}/login?error=token_generation_failed`
+      );
+    }
+  })(req, res, next);
 };

@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import HomePage from "./pages/home/HomePage";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
+import OAuthCallbackPage from "./pages/auth/OAuthCallbackPage";
 import PostDetailPage from "./pages/post/PostDetailPage";
 import SearchPage from "./pages/search/SearchPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -36,6 +37,7 @@ function App() {
               <Route index element={<HomePage />} />
               <Route path="login" element={<LoginPage />} />
               <Route path="register" element={<RegisterPage />} />
+              <Route path="auth/callback" element={<OAuthCallbackPage />} />
               <Route path="post/:postId" element={<PostDetailPage />} />
               <Route path="user/:userId" element={<ProfilePage />} />
               <Route path="search" element={<SearchPage />} />
