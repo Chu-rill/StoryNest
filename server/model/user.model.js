@@ -10,13 +10,23 @@ const UserSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: false, // Not required for OAuth users
       min: 4,
     },
     email: {
       type: String,
       unique: true,
       sparse: true,
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    authProvider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
     },
     bio: {
       type: String,

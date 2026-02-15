@@ -11,6 +11,8 @@ const {
   updateUserProfile,
   users,
   getAllUsers,
+  googleAuth,
+  googleAuthCallback,
 } = require("../controllers/auth.controller");
 const { protect } = require("../middleware/jwt");
 const validator = require("../middleware/validation");
@@ -28,6 +30,10 @@ authRoutes.post(
   validator.validateSchema(userValidation.register),
   signup
 );
+
+// Google OAuth routes
+authRoutes.get("/google", googleAuth);
+authRoutes.get("/google/callback", googleAuthCallback);
 
 // Protected routes
 authRoutes.get("/profile", protect, profile);
